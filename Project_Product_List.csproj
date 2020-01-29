@@ -1,0 +1,659 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{27E9E925-24F0-4869-96B0-F5C675E3E931}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Project_Product_List</RootNamespace>
+    <AssemblyName>Project_Product_List</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>C:\Users\NivBE\Desktop\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>57BFD32F649012DB6BCC72941BBF93F1D12DD235</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>Project_Product_List_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>if_computer_299053.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CircularProgressBar, Version=2.5.6403.13419, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CircularProgressBar.2.5.6403.13419\lib\net35-client\CircularProgressBar.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.DebuggerVisualizers.VS2012">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.DebuggerVisualizers.VS2012.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.DebuggerVisualizers.VS2013">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.DebuggerVisualizers.VS2013.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.DebuggerVisualizers.VS2015">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.DebuggerVisualizers.VS2015.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.DebuggerVisualizers.VS2017">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.DebuggerVisualizers.VS2017.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.UI">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.UI.GL">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.UI.GL.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.World">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.World.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.World.NetStandard1_4">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.World.NetStandard1_4.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>..\..\..\..\Desktop\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.pdfa">
+      <HintPath>..\..\..\..\Desktop\itextsharp.pdfa.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.xtra">
+      <HintPath>..\..\..\..\Desktop\itextsharp.xtra.dll</HintPath>
+    </Reference>
+    <Reference Include="MaterialSkin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\MaterialSkin.0.2.1\lib\MaterialSkin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\Desktop\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.140.1000.523\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.140.1000.523\lib\net40\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Design, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.140.1000.523\lib\net40\Microsoft.ReportViewer.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.140.1000.523\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.140.1000.523\lib\net40\Microsoft.ReportViewer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="microsoft.sqlserver.batchparserclient, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\microsoft.sqlserver.batchparserclient.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Smo, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Microsoft.SqlServer.Smo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.SqlServer.Types.14.0.314.76\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\..\Desktop\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SqlServerCe">
+      <HintPath>..\..\..\..\Desktop\System.Data.SqlServerCe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WinFormAnimation, Version=1.5.6298.3372, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WinFormAnimation.1.5.6298.3372\lib\net35-client\WinFormAnimation.dll</HintPath>
+    </Reference>
+    <Reference Include="ZedGraph">
+      <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\ZedGraph.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADCS_BoatForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ADCS_BoatForm.Designer.cs">
+      <DependentUpon>ADCS_BoatForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Add new product Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Add new product Form.Designer.cs">
+      <DependentUpon>Add new product Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AdminOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdminOptions.Designer.cs">
+      <DependentUpon>AdminOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AdminOptionsEntry.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdminOptionsEntry.Designer.cs">
+      <DependentUpon>AdminOptionsEntry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChooseTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChooseTestForm.Designer.cs">
+      <DependentUpon>ChooseTestForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CircularButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Customers_List.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Customers_List.Designer.cs">
+      <DependentUpon>Customers_List.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmOK.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmOK.Designer.cs">
+      <DependentUpon>frmOK.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmYesNo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmYesNo.Designer.cs">
+      <DependentUpon>frmYesNo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="genericFunctions.cs" />
+    <Compile Include="Interface1.cs" />
+    <Compile Include="Invoices_FORM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Invoices_FORM.Designer.cs">
+      <DependentUpon>Invoices_FORM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Invoice_History.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Invoice_History.Designer.cs">
+      <DependentUpon>Invoice_History.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Mail.Designer.cs">
+      <DependentUpon>Mail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainMenu.Designer.cs">
+      <DependentUpon>MainMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MaterialMessageBox.cs" />
+    <Compile Include="OrderConfirmation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OrderConfirmation.Designer.cs">
+      <DependentUpon>OrderConfirmation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Production testingFORM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Production testingFORM.Designer.cs">
+      <DependentUpon>Production testingFORM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionReports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProductionReports.Designer.cs">
+      <DependentUpon>ProductionReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionReportsHistory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProductionReportsHistory.Designer.cs">
+      <DependentUpon>ProductionReportsHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ADCS_H_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ADCS_H_Form.Designer.cs">
+      <DependentUpon>ADCS_H_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BoatUnit14_H_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BoatUnit14_H_Form.Designer.cs">
+      <DependentUpon>BoatUnit14_H_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BoatUnit28_H_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BoatUnit28_H_Form.Designer.cs">
+      <DependentUpon>BoatUnit28_H_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChoosForm_H_.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChoosForm_H_.Designer.cs">
+      <DependentUpon>ChoosForm_H_.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RemoveProductFromStock_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RemoveProductFromStock_Form.Designer.cs">
+      <DependentUpon>RemoveProductFromStock_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reports.Designer.cs">
+      <DependentUpon>Reports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RMA history.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RMA history.Designer.cs">
+      <DependentUpon>RMA history.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RMA_FORM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RMA_FORM.Designer.cs">
+      <DependentUpon>RMA_FORM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SERVICE_FORM_HISTORY.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SERVICE_FORM_HISTORY.Designer.cs">
+      <DependentUpon>SERVICE_FORM_HISTORY.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShipmentReceipt.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShipmentReceipt.Designer.cs">
+      <DependentUpon>ShipmentReceipt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SqlServerTypes\Loader.cs" />
+    <Compile Include="Stock_DataGrig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Stock_DataGrig.Designer.cs">
+      <DependentUpon>Stock_DataGrig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TestPressureOpacity_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestPressureOpacity_Form.Designer.cs">
+      <DependentUpon>TestPressureOpacity_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TestPressureOpacity_H_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestPressureOpacity_H_Form.Designer.cs">
+      <DependentUpon>TestPressureOpacity_H_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TestPressureReport_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestPressureReport_Form.Designer.cs">
+      <DependentUpon>TestPressureReport_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TestPressureReport_H_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestPressureReport_H_Form.Designer.cs">
+      <DependentUpon>TestPressureReport_H_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tracking_by_waybill_number.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tracking_by_waybill_number.Designer.cs">
+      <DependentUpon>Tracking_by_waybill_number.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UDI14_H_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UDI14_H_Form.Designer.cs">
+      <DependentUpon>UDI14_H_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UDI28_H_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UDI28_H_Form.Designer.cs">
+      <DependentUpon>UDI28_H_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ServiceForm.Designer.cs">
+      <DependentUpon>ServiceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Udi14InspectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Udi14InspectionForm.Designer.cs">
+      <DependentUpon>Udi14InspectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Udi28InspectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Udi28InspectionForm.Designer.cs">
+      <DependentUpon>Udi28InspectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UdiBoatUnit14Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UdiBoatUnit14Form.Designer.cs">
+      <DependentUpon>UdiBoatUnit14Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UdiBoatUnit28Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UdiBoatUnit28Form.Designer.cs">
+      <DependentUpon>UdiBoatUnit28Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UFLS100_InspectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UFLS100_InspectionForm.Designer.cs">
+      <DependentUpon>UFLS100_InspectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UFLS200_InspectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UFLS200_InspectionForm.Designer.cs">
+      <DependentUpon>UFLS200_InspectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UFLS400_InspectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UFLS400_InspectionForm.Designer.cs">
+      <DependentUpon>UFLS400_InspectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Update_RMA_Status.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Update_RMA_Status.Designer.cs">
+      <DependentUpon>Update_RMA_Status.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="ADCS_BoatForm.resx">
+      <DependentUpon>ADCS_BoatForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Add new product Form.resx">
+      <DependentUpon>Add new product Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AdminOptions.resx">
+      <DependentUpon>AdminOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AdminOptionsEntry.resx">
+      <DependentUpon>AdminOptionsEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChooseTestForm.resx">
+      <DependentUpon>ChooseTestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Customers_List.resx">
+      <DependentUpon>Customers_List.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmOK.resx">
+      <DependentUpon>frmOK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmYesNo.resx">
+      <DependentUpon>frmYesNo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Invoices_FORM.resx">
+      <DependentUpon>Invoices_FORM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Invoice_History.resx">
+      <DependentUpon>Invoice_History.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mail.resx">
+      <DependentUpon>Mail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainMenu.resx">
+      <DependentUpon>MainMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OrderConfirmation.resx">
+      <DependentUpon>OrderConfirmation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Production testingFORM.resx">
+      <DependentUpon>Production testingFORM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionReports.resx">
+      <DependentUpon>ProductionReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionReportsHistory.resx">
+      <DependentUpon>ProductionReportsHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="ADCS_H_Form.resx">
+      <DependentUpon>ADCS_H_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BoatUnit14_H_Form.resx">
+      <DependentUpon>BoatUnit14_H_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BoatUnit28_H_Form.resx">
+      <DependentUpon>BoatUnit28_H_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChoosForm_H_.resx">
+      <DependentUpon>ChoosForm_H_.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RemoveProductFromStock_Form.resx">
+      <DependentUpon>RemoveProductFromStock_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports.resx">
+      <DependentUpon>Reports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RMA history.resx">
+      <DependentUpon>RMA history.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RMA_FORM.resx">
+      <DependentUpon>RMA_FORM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SERVICE_FORM_HISTORY.resx">
+      <DependentUpon>SERVICE_FORM_HISTORY.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShipmentReceipt.resx">
+      <DependentUpon>ShipmentReceipt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Stock_DataGrig.resx">
+      <DependentUpon>Stock_DataGrig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestPressureOpacity_Form.resx">
+      <DependentUpon>TestPressureOpacity_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestPressureOpacity_H_Form.resx">
+      <DependentUpon>TestPressureOpacity_H_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestPressureReport_Form.resx">
+      <DependentUpon>TestPressureReport_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestPressureReport_H_Form.resx">
+      <DependentUpon>TestPressureReport_H_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tracking_by_waybill_number.resx">
+      <DependentUpon>Tracking_by_waybill_number.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UDI14_H_Form.resx">
+      <DependentUpon>UDI14_H_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UDI28_H_Form.resx">
+      <DependentUpon>UDI28_H_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ServiceForm.resx">
+      <DependentUpon>ServiceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Udi14InspectionForm.resx">
+      <DependentUpon>Udi14InspectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Udi28InspectionForm.resx">
+      <DependentUpon>Udi28InspectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UdiBoatUnit14Form.resx">
+      <DependentUpon>UdiBoatUnit14Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UdiBoatUnit28Form.resx">
+      <DependentUpon>UdiBoatUnit28Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UFLS100_InspectionForm.resx">
+      <DependentUpon>UFLS100_InspectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UFLS200_InspectionForm.resx">
+      <DependentUpon>UFLS200_InspectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UFLS400_InspectionForm.resx">
+      <DependentUpon>UFLS400_InspectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Update_RMA_Status.resx">
+      <DependentUpon>Update_RMA_Status.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Project_Product_List_TemporaryKey.pfx" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Test Folder\ACCEPTING TESTS.docx" />
+    <None Include="Test Folder\Help.docx" />
+    <None Include="Test Folder\Invoice.docx" />
+    <None Include="Test Folder\RMA History.docx" />
+    <None Include="Test Folder\RMA.docx" />
+    <None Include="Test Folder\SERVICE FORM.docx" />
+    <None Include="Test Folder\Shipment Receipt.docx" />
+    <None Include="Test Folder\TEST HISTORY.docx" />
+    <None Include="Test Folder\TPO.docx" />
+    <None Include="Test Folder\TPR.docx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="if_computer_299053.ico" />
+    <None Include="Resources\UTC_LOGO.png" />
+    <Content Include="Resources\Down.png" />
+    <Content Include="Resources\SignatureutcPNG.png" />
+    <Content Include="Resources\Top.png" />
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>7</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
