@@ -1,52 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Data.SqlServerCe;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Threading;
 using System.Reflection;
+using System.Configuration;
+using System.Data.SQLite;
+using Dapper;
 
 namespace Project_Product_List
 {
     public partial class UdiBoatUnit28Form : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+        string SavePath = Paths.Paths.UDI_BOAT_28_PATH;
 
         void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
-
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string CustomerName = comboBox1.Text.Trim();
-
-            cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBox1.Items.Add(Convert.ToString(reader[0]));
-            }
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBox1.Items.Add(dr["Name"]);
+                    }
 
-            sqlConnection1.Close();
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
         }
 
 
@@ -55,73 +57,34 @@ namespace Project_Product_List
             InitializeComponent();
         }
 
-        public void UpdateDataGrid()
+
+        private static string LoadConnectionString(string id = "Default")
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Boat28_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-            }
+            return ConfigurationManager.ConnectionStrings[id].ConnectionString;
         }
 
-        public void InsertIntoData()
+
+        public void InsertToDataBase()
         {
-            int counter = 1;
-
-
+            int Number = 1;
 
             try
             {
-                using (SqlConnection sqlCon = new SqlConnection(connectionString))
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    sqlCon.Open();
-                    SqlCommand sqlCmd = new SqlCommand("Boat28_add", sqlCon);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
-                    sqlCmd.Parameters.AddWithValue("@Number", counter);
-                    sqlCmd.Parameters.AddWithValue("@Seriel_Code", textBoxUdiSerielNumber.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Screen", checkBoxScreenOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Antena", checkBoxAntenaOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Plastic", checkBoxPlasticOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Screw", checkBoxScrewOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Button_function", checkBoxButtonFunctionOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Cover", checkBoxCoverOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Message_to_all_users", checkBoxMessageToAllUsersOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Message_between_2_udi_14_wrist", checkBoxMessageBetween2UDI14WristOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@SOS_message", checkBoxSOSMessageOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Compass", checkBoxCompassOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@PC_Connection_Dive_sim", checkBoxPCConnectionToDiveSimOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Load_Messages", checkBoxLoadMessageOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Load_Names", checkBoxLoadNamesOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Update_udi_ver", textBoxUpdateUDI.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Date_Time", checkBoxDateTimeOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Charging", checkBoxChargingLightOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Quick_connector", checkBoxQuickConnectorOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@USBcable", checkBoxUSBCableOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Power_Supply", checkBoxPowerSupplyOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Case_", checkBoxCaseOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Cover_color", checkBoxCoverColorOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Date", dateTimePicker1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Tested_by", textBoxTestedBy.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Signature", textBoxSignature.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Customer_Name", comboBox1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@WaybillNumber", textBoxWaybillNumber.Text.Trim());
-
-                    sqlCmd.ExecuteNonQuery();
-                    sqlCon.Close();
-                    MessageBox.Show("Done Successfully !");
+                    cnn.Execute("insert into BOAT28 (Number, Seriel_Code, Screen, Antena, Plastic, Screw, Button_function, Cover, Message_to_all_users, Message_between_2_udi_14_wrist, SOS_message, Compass, PC_Connection, Load_Messages, Load_Names, Update_udi_ver, Date_Time, Charging, Quick_connector, USBcable, Power_Supply, Case_, Date, Tested_by, Signature, Customer_Name, WaybillNumber, Table_Tag, Serial_Correct, Leds) values ('" + Number + "','" + textBoxUdiSerielNumber.Text.Trim() + "', '" + Convert.ToInt32(checkBoxScreenOK.Checked) + "', '" + Convert.ToInt32(checkBoxAntenaOK.Checked) + "' , '" + Convert.ToInt32(checkBoxPlasticOK.Checked) + "', '" + Convert.ToInt32(checkBoxScrewOK.Checked)  + "', '" + Convert.ToInt32(checkBoxButtonFunctionOK.Checked) + "','" + Convert.ToInt32(checkBoxCoverOK.Checked) + "' , '" + Convert.ToInt32(checkBoxMessageToAllUsersOK.Checked) + "', '" + Convert.ToInt32(checkBoxMessageBetween2UDI14WristOK.Checked) + "', '" + Convert.ToInt32(checkBoxSOSMessageOK.Checked) + "', '" + Convert.ToInt32(checkBoxCompassOK.Checked) + "', '" + Convert.ToInt32(checkBoxPCConnectionToDiveSimOK.Checked) + "', '" + Convert.ToInt32(checkBoxLoadMessageOK.Checked) + "', '" + Convert.ToInt32(checkBoxLoadNamesOK.Checked) + "', '" + textBoxUpdateUDI.Text.Trim() + "', '" + Convert.ToInt32(checkBoxDateTimeOK.Checked) + "', '" + Convert.ToInt32(checkBoxChargingLightOK.Checked) + "',  '" + Convert.ToInt32(checkBoxQuickConnectorOK.Checked)  + "', '" + Convert.ToInt32(checkBoxUSBCableOK.Checked) + "', '" + Convert.ToInt32(checkBoxPowerSupplyOK.Checked) + "', '" + Convert.ToInt32(checkBoxCaseOK.Checked) + "', '" + dateTimePicker1.Text.Trim() + "', '" + textBoxTestedBy.Text.Trim() + "', '" + textBoxSignature.Text.Trim() + "', '" + comboBox1.Text.Trim() + "', '" + textBoxWaybillNumber.Text.Trim() + "', '" + comboBoxTableTag.Text.Trim() + "', '" + Convert.ToInt32(checkBoxUdiSerialCorrectOK.Checked) + "', '" + Convert.ToInt32(checkBoxUdiLedsOK.Checked) + "')");
                 }
+
+                MessageBox.Show("Done Successfully !");
+
+
             }
             catch (SqlException ex)
             {
 
                 Console.WriteLine(ex.ToString());
             }
-
-
         }
-
 
         private void SendToPrinter_Boat28()
         {
@@ -130,11 +93,10 @@ namespace Project_Product_List
             ProcessStartInfo info = new ProcessStartInfo();
             info.Verb = "print";
 
-            string SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "BOAT UNIT 28" + @"\";
 
             int PDFcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length); // Will Retrieve count of PDF files  in directry
 
-            info.FileName = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "BOAT UNIT 28" + @"\" + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
+            info.FileName = SavePath + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
 
             info.CreateNoWindow = true;
             info.WindowStyle = ProcessWindowStyle.Hidden;
@@ -184,9 +146,9 @@ namespace Project_Product_List
             {
                 try
                 {
-                    InsertIntoData();
-                    CreateInspectionTestDocument();
-                    UpdateDataGrid();
+                    InsertToDataBase();
+                    PDFCreator();
+                    //UpdateDataGrid();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         try
@@ -204,7 +166,7 @@ namespace Project_Product_List
                 catch (Exception Ex)
                 {
                     MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so AT document will be created, but it will not be stored in the Base database");
-                    CreateInspectionTestDocument();
+                    PDFCreator();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         
@@ -258,38 +220,51 @@ namespace Project_Product_List
 
         private void UdiBoatUnit28Form_Load(object sender, EventArgs e)
         {
-            int DOCyear = dateTimePicker1.Value.Year;
+            int DOCyear = DateTime.Now.Year;
 
-            string SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "BOAT UNIT 28" + @"\";
 
             if (!Directory.Exists(SavePath))
             {
-                Directory.CreateDirectory(SavePath);
+                try
+                {
+                    Directory.CreateDirectory(SavePath);
+                }
+                catch
+                {
+                    // Bring up a dialog to chose a folder path in which to open or save a file.
+                    var folderBrowserDialog1 = new FolderBrowserDialog();
+
+                    // Show the FolderBrowserDialog.
+                    DialogResult result = folderBrowserDialog1.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        SavePath = folderBrowserDialog1.SelectedPath;
+                    }
+                }
             }
 
             Load_Customers_To_ComboBox();
 
-            UpdateDataGrid();
+            //UpdateDataGrid();
 
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            UpdateDataGrid();
+            //UpdateDataGrid();
         }
 
-        void CreateInspectionTestDocument()
+        void PDFCreator()
         {
 
                 ///////////// Creating the document  /////////////
 
-                FontFactory.RegisterDirectories();
+            FontFactory.RegisterDirectories();
 
-                int DOCyear = dateTimePicker1.Value.Year;
+            int DOCyear = dateTimePicker1.Value.Year;
+            
 
-                string SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "BOAT UNIT 28" + @"\";
-
-                if (!Directory.Exists(SavePath))
+            if (!Directory.Exists(SavePath))
                 {
                     Directory.CreateDirectory(SavePath);
                 }
@@ -297,12 +272,12 @@ namespace Project_Product_List
                 int PDFcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length) + 1; // Will Retrieve count of PDF files  in directry
 
 
-                SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "BOAT UNIT 28" + @"\" + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
+                string SavePathNew = SavePath + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
 
 
 
                 Document doc = new Document(iTextSharp.text.PageSize.A4);
-                PdfWriter wri = PdfWriter.GetInstance(doc, new FileStream(SavePath, FileMode.Create));
+                PdfWriter wri = PdfWriter.GetInstance(doc, new FileStream(SavePathNew, FileMode.Create));
 
 
                 doc.Open();
@@ -323,7 +298,7 @@ namespace Project_Product_List
                 // Signature logo
                 iTextSharp.text.Image SignaturePNG = iTextSharp.text.Image.GetInstance("SignatureutcPNG.png");
                 SignaturePNG.ScalePercent(75f);
-                SignaturePNG.SetAbsolutePosition(doc.PageSize.Width - 170f - 72f, doc.PageSize.Height - 250f - 550f);
+                SignaturePNG.SetAbsolutePosition(doc.PageSize.Width - 170f - 72f, doc.PageSize.Height - 250f - 580f);
 
                 ///////////////////////////////////////////////////////
 
@@ -722,6 +697,53 @@ namespace Project_Product_List
                 }
             }
 
+            table3.AddCell("17");
+            table3.AddCell("Table tag");
+            table3.AddCell(comboBoxTableTag.Text);
+
+
+            table3.AddCell("18");
+            table3.AddCell("Serial Number Correct");
+            bool SerialCorrectFail = (checkBoxUdiSerialCorrectOK.Checked);
+            bool NOT_CHECKED_SerialCorrect = (!checkBoxUdiSerialCorrectOK.Checked) && (!checkBoxUdiSerialCorrectFail.Checked);
+
+            if (NOT_CHECKED_SerialCorrect)
+            {
+                table3.AddCell("NOT CHECKED");
+            }
+            else
+            {
+                if (SerialCorrectFail)
+                {
+                    table3.AddCell("OK");
+                }
+                else
+                {
+                    table3.AddCell("FAIL");
+                }
+            }
+
+            table3.AddCell("19");
+            table3.AddCell("Leds");
+            bool UdiLeds = (checkBoxUdiLedsOK.Checked);
+            bool NOT_CHECKED_UdiLeds = (!checkBoxUdiLedsOK.Checked) && (!checkBoxUdiLedsFail.Checked);
+
+            if (NOT_CHECKED_UdiLeds)
+            {
+                table3.AddCell("NOT CHECKED");
+            }
+            else
+            {
+                if (UdiLeds)
+                {
+                    table3.AddCell("OK");
+                }
+                else
+                {
+                    table3.AddCell("FAIL");
+                }
+            }
+
 
             ////////////////////////  END table3 - Tests  ///////////////////////////////
 
@@ -750,7 +772,7 @@ namespace Project_Product_List
 
 
 
-            table4.AddCell("17");
+            table4.AddCell("20");
             table4.AddCell("Quick connector");
             bool QuickConnector = (checkBoxQuickConnectorOK.Checked);
             bool NOT_CHECKED_QuickConnector = (!checkBoxQuickConnectorOK.Checked) && (!checkBoxQuickConnectorFAIL.Checked);
@@ -771,7 +793,7 @@ namespace Project_Product_List
                 }
             }
 
-            table4.AddCell("18");
+            table4.AddCell("21");
             table4.AddCell("USB Cable");
             bool USBCable = (checkBoxUSBCableOK.Checked);
             bool NOT_CHECKED_USBCable = (!checkBoxUSBCableOK.Checked) && (!checkBoxUSBCableFAIL.Checked);
@@ -792,7 +814,7 @@ namespace Project_Product_List
                 }
             }
 
-            table4.AddCell("19");
+            table4.AddCell("22");
             table4.AddCell("Power supply");
             bool PowerSupply = (checkBoxPowerSupplyOK.Checked);
             bool NOT_CHECKED_PowerSupply = (!checkBoxPowerSupplyOK.Checked) && (!checkBoxPowerSupplyFAIL.Checked);
@@ -813,7 +835,7 @@ namespace Project_Product_List
                 }
             }//
 
-            table4.AddCell("20");
+            table4.AddCell("23");
             table4.AddCell("Case");
             bool Case = (checkBoxCaseOK.Checked);
             bool NOT_CHECKED_Case = (!checkBoxCaseOK.Checked) && (!checkBoxCaseFAIL.Checked);
@@ -834,7 +856,7 @@ namespace Project_Product_List
                 }
             }
 
-            table4.AddCell("21");
+            table4.AddCell("24");
             table4.AddCell("Cover");
             bool Cover = (checkBoxCoverColorOK.Checked);
             bool NOT_CHECKED_Cover = (!checkBoxCoverColorOK.Checked) && (!checkBoxCoverColorFAIL.Checked);
@@ -909,39 +931,10 @@ namespace Project_Product_List
 
         private void button2_Click(object sender, EventArgs e)
         {
-            CreateInspectionTestDocument();
+            PDFCreator();
             clearFieldsAfterDone();
         }
 
-        public void Update_WayBill()
-        {
-
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string SerielNumber = textBoxUdiSerielNumber.Text.Trim();
-            string WaybillNumber = textBoxWaybillNumber.Text.Trim();
-            cmd.CommandText = "UPDATE  Boat28_dt SET WaybillNumber= '" + WaybillNumber + "' WHERE Seriel_Code = '" + SerielNumber + "';";
-
-
-
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
-            {
-                reader.Read();
-            }
-
-            sqlConnection1.Close();
-            MessageBox.Show("Updated successfully");
-
-
-        }
 
 
         private void button2_Click_1(object sender, EventArgs e)
@@ -954,8 +947,8 @@ namespace Project_Product_List
             {
                 try
                 {
-                    Update_WayBill();
-                    UpdateDataGrid();
+                    //Update_WayBill();
+                    //UpdateDataGrid();
                 }
                 catch (Exception Ex)
                 {
@@ -974,7 +967,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\ACCEPTING TESTS.docx";
+            pi.FileName = Paths.Paths.UDI_BOAT_28_HELP_FILE;
             p.StartInfo = pi;
 
             try
@@ -1013,9 +1006,8 @@ namespace Project_Product_List
             {
                 try
                 {
-                    InsertIntoData();
-                    CreateInspectionTestDocument();
-                    UpdateDataGrid();
+                    InsertToDataBase();
+                    PDFCreator();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         SendToPrinter_Boat28();
@@ -1025,7 +1017,7 @@ namespace Project_Product_List
                 catch (Exception Ex)
                 {
                     MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so AT document will be created, but it will not be stored in the Base database");
-                    CreateInspectionTestDocument();
+                    PDFCreator();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         SendToPrinter_Boat28();

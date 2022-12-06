@@ -65,7 +65,7 @@
             this.doneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textBox8 = new System.Windows.Forms.ComboBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxItemDescription = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -414,13 +414,13 @@
             this.textBox8.Sorted = true;
             this.textBox8.TabIndex = 335;
             // 
-            // textBox1
+            // textBoxItemDescription
             // 
-            this.textBox1.Location = new System.Drawing.Point(191, 56);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(141, 20);
-            this.textBox1.TabIndex = 13;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBoxItemDescription.Location = new System.Drawing.Point(191, 56);
+            this.textBoxItemDescription.Name = "textBoxItemDescription";
+            this.textBoxItemDescription.Size = new System.Drawing.Size(141, 20);
+            this.textBoxItemDescription.TabIndex = 13;
+            this.textBoxItemDescription.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // TestPressureOpacity_Form
             // 
@@ -449,7 +449,7 @@
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBoxItemDescription);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
@@ -514,6 +514,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem doneToolStripMenuItem;
         private System.Windows.Forms.ComboBox textBox8;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxItemDescription;
     }
 }

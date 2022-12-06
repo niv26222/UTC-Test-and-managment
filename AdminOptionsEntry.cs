@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Project_Product_List
@@ -29,7 +22,7 @@ namespace Project_Product_List
         {
 
 
-            const string main_password = "UTC2019";
+            const string main_password = "UTC2022";
 
             string password_entered_by_user = textBoxPassword.Text.ToUpper();
 
@@ -44,6 +37,11 @@ namespace Project_Product_List
             {
                 MessageBox.Show("Wrong password, please try again");
             }
+        }
+
+        private void AdminOptionsEntry_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

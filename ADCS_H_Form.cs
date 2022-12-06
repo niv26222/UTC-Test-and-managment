@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Configuration;
+using System.Data.SQLite;
 
 namespace Project_Product_List
 {
     public partial class ADCS_H_Form : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
 
         public ADCS_H_Form()
         {
@@ -42,14 +34,14 @@ namespace Project_Product_List
         {
             string productSerialNumber = textBoxSerialNumber.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ADCS_dt] where Seriel_Code LIKE '%" + productSerialNumber + "';", sqlCon);
-
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM ADCS where Seriel_Code LIKE '%" + productSerialNumber + "';", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
@@ -57,90 +49,116 @@ namespace Project_Product_List
         {
             string CustomerName = comboBoxCustomerName.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ADCS_dt] where Customer_Name = '" + CustomerName + "';", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM ADCS where Customer_Name = '" + CustomerName + "';", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
         void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string CustomerName = comboBoxCustomerName.Text.Trim();
-
-            cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxCustomerName.Items.Add(Convert.ToString(reader[0]));
-            }
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomerName.Items.Add(dr["Name"]);
+                    }
 
-            sqlConnection1.Close();
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
 
         }
 
         private void ADCS_H_Form_Load(object sender, EventArgs e)
         {
+            UpdateDataGrid();
             Load_Customers_To_ComboBox();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ADCS_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
-            }
+
+        }
+
+        private static string LoadConnectionString(string id = "Default")
+        {
+            return ConfigurationManager.ConnectionStrings[id].ConnectionString;
         }
 
         public void UpdateDataGrid()
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ADCS_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM ADCS", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
         public void Delete_from_ADCS()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
             string deleteSN = textBox1.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM ADCS_dt WHERE Seriel_Code = '" + deleteSN + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM ADCS WHERE Seriel_Code = '" + deleteSN + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
+
+
             MessageBox.Show("Done !");
         }
 
@@ -203,7 +221,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\TEST HISTORY.docx";
+            pi.FileName = Paths.Paths.ADCS_HISTORY_HELP_FILE;
             p.StartInfo = pi;
 
             try
@@ -219,6 +237,11 @@ namespace Project_Product_List
         private void excelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             createExcelFile();
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }

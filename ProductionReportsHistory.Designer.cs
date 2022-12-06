@@ -61,9 +61,9 @@
             this.label6.ForeColor = System.Drawing.Color.SteelBlue;
             this.label6.Location = new System.Drawing.Point(506, 18);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(777, 63);
+            this.label6.Size = new System.Drawing.Size(562, 63);
             this.label6.TabIndex = 396;
-            this.label6.Text = "Production Reports History";
+            this.label6.Text = "Production Reports";
             // 
             // textBoxSN
             // 
@@ -165,7 +165,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ProductionReportsHistory";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Production Reports History";
+            this.Text = "Production Reports";
             this.Load += new System.EventHandler(this.ProductionReportsHistory_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxExcel)).EndInit();

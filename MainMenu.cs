@@ -1,31 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Data.SqlClient;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.SqlServer.Management.Smo;
 using Microsoft.SqlServer.Management.Common;
-
-
-
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Project_Product_List  
 {
     public partial class Form2 : Form
     {
+
         public Form2()
         {
             InitializeComponent();
         }
+
+
 
         private void Form2_Load(object sender, EventArgs e)
         {
@@ -35,10 +29,14 @@ namespace Project_Product_List
             labelDate.Text = DateTime.Now.ToLongDateString();
         }
 
+
+
         private void button2_Click(object sender, EventArgs e)
         {
 
         }
+
+
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -47,16 +45,22 @@ namespace Project_Product_List
         }
 
 
+
         private void button8_Click(object sender, EventArgs e)
         {
 
         }
 
+
+
         private void button7_Click(object sender, EventArgs e)
         {
+            //Thread.Sleep(1000);
             new ChoosForm_H_().Show();
             this.Hide();
         }
+
+
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -65,10 +69,13 @@ namespace Project_Product_List
             timer1.Start();
         }
 
+
+
         private void labelTime_Click(object sender, EventArgs e)
         {
 
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -76,11 +83,15 @@ namespace Project_Product_List
             this.Hide();
         }
 
+
+
         private void button2_Click_1(object sender, EventArgs e)
         {
             new ServiceForm().Show();
             this.Hide();
         }
+
+
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -88,10 +99,12 @@ namespace Project_Product_List
             this.Hide();
         }
 
+
         private void labelDate_Click(object sender, EventArgs e)
         {
 
         }
+
 
         private void button2_Click_2(object sender, EventArgs e)
         {
@@ -137,8 +150,10 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
-            
+            //pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+
+            pi.FileName = Paths.Paths.MAIN_MENU_HELP_FILE;
+
             p.StartInfo = pi;
 
             try
@@ -148,12 +163,13 @@ namespace Project_Product_List
             catch (Exception Ex)
             {               
                 MessageBox.Show(Ex.Message);
-            } 
+            }
+
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Version 7.1.6\n\nDeveloped in UTC for Maintenance and Management.\n\nProgramming language : C# - { " + typeof(string).Assembly.ImageRuntimeVersion +" }\n\nSoftware Developer : Niv Ben Abat.");
+            MessageBox.Show("Version 2.0.1\n\nDeveloped in UTC for Maintenance and Management.\n\nProgramming language : C# - { " + typeof(string).Assembly.ImageRuntimeVersion +" }\n\nSoftware Developer : Niv Ben Abat.");
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -188,7 +204,7 @@ namespace Project_Product_List
 
                 string script = File.ReadAllText(@"P:\Niv\backupScript.sql");
                 SqlConnection conn = new SqlConnection(sqlConnectionString);
-                Server server = new Server(new ServerConnection(conn)); // <------ Problem is here :(  Why ??
+                Server server = new Server(new ServerConnection(conn));
                 server.ConnectionContext.ExecuteNonQuery(script);
             }
             catch (SqlException Ex)
@@ -202,6 +218,12 @@ namespace Project_Product_List
             this.Hide();
             new AdminOptionsEntry().Show();
             
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            new ProductionReports().Show();
+            this.Hide();
         }
     }
 }

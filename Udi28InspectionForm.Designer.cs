@@ -117,6 +117,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxUdiVer = new System.Windows.Forms.ComboBox();
             this.textBoxTestedBy = new System.Windows.Forms.ComboBox();
+            this.comboBoxTableTag = new System.Windows.Forms.ComboBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.checkBoxUdiSerialCorrectFail = new System.Windows.Forms.CheckBox();
+            this.checkBoxUdiSerialCorrectOK = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -125,7 +130,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(71, 666);
+            this.pictureBox1.Location = new System.Drawing.Point(75, 625);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(241, 173);
@@ -137,10 +142,10 @@
             // 
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold);
             this.button3.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.button3.Location = new System.Drawing.Point(437, 801);
+            this.button3.Location = new System.Drawing.Point(13, 807);
             this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(409, 38);
+            this.button3.Size = new System.Drawing.Size(409, 48);
             this.button3.TabIndex = 220;
             this.button3.Text = "Back";
             this.button3.UseVisualStyleBackColor = true;
@@ -151,7 +156,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(72, 194);
+            this.label1.Location = new System.Drawing.Point(72, 169);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(57, 17);
@@ -163,7 +168,7 @@
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label24.ForeColor = System.Drawing.Color.Black;
-            this.label24.Location = new System.Drawing.Point(436, 182);
+            this.label24.Location = new System.Drawing.Point(436, 152);
             this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(146, 17);
@@ -175,7 +180,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label4.ForeColor = System.Drawing.Color.Black;
-            this.label4.Location = new System.Drawing.Point(73, 221);
+            this.label4.Location = new System.Drawing.Point(73, 196);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(59, 17);
@@ -187,7 +192,7 @@
             this.label25.AutoSize = true;
             this.label25.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label25.ForeColor = System.Drawing.Color.Black;
-            this.label25.Location = new System.Drawing.Point(436, 214);
+            this.label25.Location = new System.Drawing.Point(436, 184);
             this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(232, 17);
@@ -199,7 +204,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label6.ForeColor = System.Drawing.Color.Black;
-            this.label6.Location = new System.Drawing.Point(74, 247);
+            this.label6.Location = new System.Drawing.Point(74, 222);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(55, 17);
@@ -211,7 +216,7 @@
             this.label26.AutoSize = true;
             this.label26.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label26.ForeColor = System.Drawing.Color.Black;
-            this.label26.Location = new System.Drawing.Point(436, 243);
+            this.label26.Location = new System.Drawing.Point(436, 213);
             this.label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(101, 17);
@@ -223,7 +228,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label8.ForeColor = System.Drawing.Color.Black;
-            this.label8.Location = new System.Drawing.Point(73, 276);
+            this.label8.Location = new System.Drawing.Point(73, 251);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(52, 17);
@@ -235,7 +240,7 @@
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label10.ForeColor = System.Drawing.Color.Black;
-            this.label10.Location = new System.Drawing.Point(72, 385);
+            this.label10.Location = new System.Drawing.Point(72, 360);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(110, 17);
@@ -247,7 +252,7 @@
             this.label28.AutoSize = true;
             this.label28.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label28.ForeColor = System.Drawing.Color.Black;
-            this.label28.Location = new System.Drawing.Point(436, 277);
+            this.label28.Location = new System.Drawing.Point(436, 247);
             this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(72, 17);
@@ -259,7 +264,7 @@
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label12.ForeColor = System.Drawing.Color.Black;
-            this.label12.Location = new System.Drawing.Point(74, 419);
+            this.label12.Location = new System.Drawing.Point(74, 394);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(52, 17);
@@ -271,7 +276,7 @@
             this.label29.AutoSize = true;
             this.label29.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label29.ForeColor = System.Drawing.Color.Black;
-            this.label29.Location = new System.Drawing.Point(438, 307);
+            this.label29.Location = new System.Drawing.Point(438, 277);
             this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(109, 17);
@@ -283,7 +288,7 @@
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label14.ForeColor = System.Drawing.Color.Black;
-            this.label14.Location = new System.Drawing.Point(69, 515);
+            this.label14.Location = new System.Drawing.Point(74, 490);
             this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(121, 17);
@@ -295,7 +300,7 @@
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label30.ForeColor = System.Drawing.Color.Black;
-            this.label30.Location = new System.Drawing.Point(438, 339);
+            this.label30.Location = new System.Drawing.Point(438, 309);
             this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(107, 17);
@@ -307,7 +312,7 @@
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label16.ForeColor = System.Drawing.Color.Black;
-            this.label16.Location = new System.Drawing.Point(69, 546);
+            this.label16.Location = new System.Drawing.Point(74, 521);
             this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(79, 17);
@@ -319,7 +324,7 @@
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label31.ForeColor = System.Drawing.Color.Black;
-            this.label31.Location = new System.Drawing.Point(436, 369);
+            this.label31.Location = new System.Drawing.Point(436, 339);
             this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(95, 17);
@@ -331,7 +336,7 @@
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label18.ForeColor = System.Drawing.Color.Black;
-            this.label18.Location = new System.Drawing.Point(69, 576);
+            this.label18.Location = new System.Drawing.Point(74, 551);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(102, 17);
@@ -343,7 +348,7 @@
             this.label32.AutoSize = true;
             this.label32.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label32.ForeColor = System.Drawing.Color.Black;
-            this.label32.Location = new System.Drawing.Point(438, 398);
+            this.label32.Location = new System.Drawing.Point(438, 368);
             this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(126, 17);
@@ -355,7 +360,7 @@
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label20.ForeColor = System.Drawing.Color.Black;
-            this.label20.Location = new System.Drawing.Point(69, 604);
+            this.label20.Location = new System.Drawing.Point(74, 579);
             this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(43, 17);
@@ -367,7 +372,7 @@
             this.label33.AutoSize = true;
             this.label33.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label33.ForeColor = System.Drawing.Color.Black;
-            this.label33.Location = new System.Drawing.Point(437, 430);
+            this.label33.Location = new System.Drawing.Point(437, 400);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(94, 17);
@@ -379,7 +384,7 @@
             this.label34.AutoSize = true;
             this.label34.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label34.ForeColor = System.Drawing.Color.Black;
-            this.label34.Location = new System.Drawing.Point(437, 460);
+            this.label34.Location = new System.Drawing.Point(437, 430);
             this.label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(199, 17);
@@ -391,7 +396,7 @@
             this.label50.AutoSize = true;
             this.label50.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.label50.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label50.Location = new System.Drawing.Point(74, 145);
+            this.label50.Location = new System.Drawing.Point(74, 120);
             this.label50.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(94, 20);
@@ -403,7 +408,7 @@
             this.label47.AutoSize = true;
             this.label47.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.label47.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label47.Location = new System.Drawing.Point(438, 145);
+            this.label47.Location = new System.Drawing.Point(438, 115);
             this.label47.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(58, 20);
@@ -415,7 +420,7 @@
             this.label48.AutoSize = true;
             this.label48.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.label48.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label48.Location = new System.Drawing.Point(74, 479);
+            this.label48.Location = new System.Drawing.Point(74, 454);
             this.label48.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(106, 20);
@@ -427,7 +432,7 @@
             this.label49.AutoSize = true;
             this.label49.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.label49.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label49.Location = new System.Drawing.Point(74, 341);
+            this.label49.Location = new System.Drawing.Point(74, 316);
             this.label49.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(140, 20);
@@ -439,7 +444,7 @@
             this.label46.AutoSize = true;
             this.label46.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label46.ForeColor = System.Drawing.Color.Black;
-            this.label46.Location = new System.Drawing.Point(431, 605);
+            this.label46.Location = new System.Drawing.Point(437, 667);
             this.label46.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(76, 17);
@@ -451,7 +456,7 @@
             this.label51.AutoSize = true;
             this.label51.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label51.ForeColor = System.Drawing.Color.Black;
-            this.label51.Location = new System.Drawing.Point(433, 636);
+            this.label51.Location = new System.Drawing.Point(437, 698);
             this.label51.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(76, 17);
@@ -461,7 +466,7 @@
             // textBoxSignature
             // 
             this.textBoxSignature.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.textBoxSignature.Location = new System.Drawing.Point(582, 629);
+            this.textBoxSignature.Location = new System.Drawing.Point(584, 691);
             this.textBoxSignature.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxSignature.Name = "textBoxSignature";
             this.textBoxSignature.Size = new System.Drawing.Size(264, 21);
@@ -469,7 +474,7 @@
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(582, 557);
+            this.dateTimePicker1.Location = new System.Drawing.Point(584, 619);
             this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(4);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(264, 24);
@@ -480,7 +485,7 @@
             this.label52.AutoSize = true;
             this.label52.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label52.ForeColor = System.Drawing.Color.Black;
-            this.label52.Location = new System.Drawing.Point(435, 563);
+            this.label52.Location = new System.Drawing.Point(437, 625);
             this.label52.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label52.Name = "label52";
             this.label52.Size = new System.Drawing.Size(43, 17);
@@ -492,7 +497,7 @@
             this.label54.AutoSize = true;
             this.label54.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.label54.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label54.Location = new System.Drawing.Point(435, 519);
+            this.label54.Location = new System.Drawing.Point(437, 581);
             this.label54.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label54.Name = "label54";
             this.label54.Size = new System.Drawing.Size(80, 20);
@@ -503,7 +508,7 @@
             // 
             this.checkBoxScreenOK.AutoSize = true;
             this.checkBoxScreenOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxScreenOK.Location = new System.Drawing.Point(151, 194);
+            this.checkBoxScreenOK.Location = new System.Drawing.Point(151, 169);
             this.checkBoxScreenOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxScreenOK.Name = "checkBoxScreenOK";
             this.checkBoxScreenOK.Size = new System.Drawing.Size(47, 21);
@@ -515,7 +520,7 @@
             // 
             this.checkBoxScreenFAIL.AutoSize = true;
             this.checkBoxScreenFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxScreenFAIL.Location = new System.Drawing.Point(211, 194);
+            this.checkBoxScreenFAIL.Location = new System.Drawing.Point(211, 169);
             this.checkBoxScreenFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxScreenFAIL.Name = "checkBoxScreenFAIL";
             this.checkBoxScreenFAIL.Size = new System.Drawing.Size(55, 21);
@@ -527,7 +532,7 @@
             // 
             this.checkBoxMessageToAllUsersOK.AutoSize = true;
             this.checkBoxMessageToAllUsersOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxMessageToAllUsersOK.Location = new System.Drawing.Point(706, 183);
+            this.checkBoxMessageToAllUsersOK.Location = new System.Drawing.Point(706, 153);
             this.checkBoxMessageToAllUsersOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxMessageToAllUsersOK.Name = "checkBoxMessageToAllUsersOK";
             this.checkBoxMessageToAllUsersOK.Size = new System.Drawing.Size(47, 21);
@@ -539,7 +544,7 @@
             // 
             this.checkBoxQuickConnectorOK.AutoSize = true;
             this.checkBoxQuickConnectorOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxQuickConnectorOK.Location = new System.Drawing.Point(236, 518);
+            this.checkBoxQuickConnectorOK.Location = new System.Drawing.Point(236, 493);
             this.checkBoxQuickConnectorOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxQuickConnectorOK.Name = "checkBoxQuickConnectorOK";
             this.checkBoxQuickConnectorOK.Size = new System.Drawing.Size(47, 21);
@@ -551,7 +556,7 @@
             // 
             this.checkBoxCompassOK.AutoSize = true;
             this.checkBoxCompassOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxCompassOK.Location = new System.Drawing.Point(706, 272);
+            this.checkBoxCompassOK.Location = new System.Drawing.Point(706, 242);
             this.checkBoxCompassOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCompassOK.Name = "checkBoxCompassOK";
             this.checkBoxCompassOK.Size = new System.Drawing.Size(47, 21);
@@ -563,7 +568,7 @@
             // 
             this.checkBoxMessageToAllUsersFAIL.AutoSize = true;
             this.checkBoxMessageToAllUsersFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxMessageToAllUsersFAIL.Location = new System.Drawing.Point(808, 183);
+            this.checkBoxMessageToAllUsersFAIL.Location = new System.Drawing.Point(808, 153);
             this.checkBoxMessageToAllUsersFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxMessageToAllUsersFAIL.Name = "checkBoxMessageToAllUsersFAIL";
             this.checkBoxMessageToAllUsersFAIL.Size = new System.Drawing.Size(55, 21);
@@ -575,7 +580,7 @@
             // 
             this.checkBoxPlasticOK.AutoSize = true;
             this.checkBoxPlasticOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxPlasticOK.Location = new System.Drawing.Point(153, 247);
+            this.checkBoxPlasticOK.Location = new System.Drawing.Point(153, 222);
             this.checkBoxPlasticOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPlasticOK.Name = "checkBoxPlasticOK";
             this.checkBoxPlasticOK.Size = new System.Drawing.Size(47, 21);
@@ -587,7 +592,7 @@
             // 
             this.checkBoxCompassFAIL.AutoSize = true;
             this.checkBoxCompassFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxCompassFAIL.Location = new System.Drawing.Point(808, 272);
+            this.checkBoxCompassFAIL.Location = new System.Drawing.Point(808, 242);
             this.checkBoxCompassFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCompassFAIL.Name = "checkBoxCompassFAIL";
             this.checkBoxCompassFAIL.Size = new System.Drawing.Size(55, 21);
@@ -599,7 +604,7 @@
             // 
             this.checkBoxButtonFunctionOK.AutoSize = true;
             this.checkBoxButtonFunctionOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxButtonFunctionOK.Location = new System.Drawing.Point(190, 389);
+            this.checkBoxButtonFunctionOK.Location = new System.Drawing.Point(190, 364);
             this.checkBoxButtonFunctionOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxButtonFunctionOK.Name = "checkBoxButtonFunctionOK";
             this.checkBoxButtonFunctionOK.Size = new System.Drawing.Size(47, 21);
@@ -611,7 +616,7 @@
             // 
             this.checkBoxSOSMessageOK.AutoSize = true;
             this.checkBoxSOSMessageOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxSOSMessageOK.Location = new System.Drawing.Point(706, 244);
+            this.checkBoxSOSMessageOK.Location = new System.Drawing.Point(706, 214);
             this.checkBoxSOSMessageOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxSOSMessageOK.Name = "checkBoxSOSMessageOK";
             this.checkBoxSOSMessageOK.Size = new System.Drawing.Size(47, 21);
@@ -623,7 +628,7 @@
             // 
             this.checkBoxQuickConnectorFAIL.AutoSize = true;
             this.checkBoxQuickConnectorFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxQuickConnectorFAIL.Location = new System.Drawing.Point(298, 518);
+            this.checkBoxQuickConnectorFAIL.Location = new System.Drawing.Point(298, 493);
             this.checkBoxQuickConnectorFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxQuickConnectorFAIL.Name = "checkBoxQuickConnectorFAIL";
             this.checkBoxQuickConnectorFAIL.Size = new System.Drawing.Size(55, 21);
@@ -635,7 +640,7 @@
             // 
             this.checkBoxLoadMessageOK.AutoSize = true;
             this.checkBoxLoadMessageOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxLoadMessageOK.Location = new System.Drawing.Point(706, 341);
+            this.checkBoxLoadMessageOK.Location = new System.Drawing.Point(706, 311);
             this.checkBoxLoadMessageOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxLoadMessageOK.Name = "checkBoxLoadMessageOK";
             this.checkBoxLoadMessageOK.Size = new System.Drawing.Size(47, 21);
@@ -647,7 +652,7 @@
             // 
             this.checkBoxButtonFunctionFAIL.AutoSize = true;
             this.checkBoxButtonFunctionFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxButtonFunctionFAIL.Location = new System.Drawing.Point(252, 387);
+            this.checkBoxButtonFunctionFAIL.Location = new System.Drawing.Point(252, 362);
             this.checkBoxButtonFunctionFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxButtonFunctionFAIL.Name = "checkBoxButtonFunctionFAIL";
             this.checkBoxButtonFunctionFAIL.Size = new System.Drawing.Size(55, 21);
@@ -659,7 +664,7 @@
             // 
             this.checkBoxDateTimeOK.AutoSize = true;
             this.checkBoxDateTimeOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxDateTimeOK.Location = new System.Drawing.Point(706, 427);
+            this.checkBoxDateTimeOK.Location = new System.Drawing.Point(706, 397);
             this.checkBoxDateTimeOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxDateTimeOK.Name = "checkBoxDateTimeOK";
             this.checkBoxDateTimeOK.Size = new System.Drawing.Size(47, 21);
@@ -671,7 +676,7 @@
             // 
             this.checkBoxAntenaOK.AutoSize = true;
             this.checkBoxAntenaOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxAntenaOK.Location = new System.Drawing.Point(152, 220);
+            this.checkBoxAntenaOK.Location = new System.Drawing.Point(152, 195);
             this.checkBoxAntenaOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxAntenaOK.Name = "checkBoxAntenaOK";
             this.checkBoxAntenaOK.Size = new System.Drawing.Size(47, 21);
@@ -683,7 +688,7 @@
             // 
             this.checkBoxPowerSupplyOK.AutoSize = true;
             this.checkBoxPowerSupplyOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxPowerSupplyOK.Location = new System.Drawing.Point(236, 576);
+            this.checkBoxPowerSupplyOK.Location = new System.Drawing.Point(236, 551);
             this.checkBoxPowerSupplyOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPowerSupplyOK.Name = "checkBoxPowerSupplyOK";
             this.checkBoxPowerSupplyOK.Size = new System.Drawing.Size(47, 21);
@@ -695,7 +700,7 @@
             // 
             this.checkBoxMessageBetween2UDI28WristOK.AutoSize = true;
             this.checkBoxMessageBetween2UDI28WristOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxMessageBetween2UDI28WristOK.Location = new System.Drawing.Point(706, 213);
+            this.checkBoxMessageBetween2UDI28WristOK.Location = new System.Drawing.Point(706, 183);
             this.checkBoxMessageBetween2UDI28WristOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxMessageBetween2UDI28WristOK.Name = "checkBoxMessageBetween2UDI28WristOK";
             this.checkBoxMessageBetween2UDI28WristOK.Size = new System.Drawing.Size(47, 21);
@@ -707,7 +712,7 @@
             // 
             this.checkBoxPlasticFAIL.AutoSize = true;
             this.checkBoxPlasticFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxPlasticFAIL.Location = new System.Drawing.Point(213, 247);
+            this.checkBoxPlasticFAIL.Location = new System.Drawing.Point(213, 222);
             this.checkBoxPlasticFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPlasticFAIL.Name = "checkBoxPlasticFAIL";
             this.checkBoxPlasticFAIL.Size = new System.Drawing.Size(55, 21);
@@ -719,7 +724,7 @@
             // 
             this.checkBoxPCConnectionToDiveSimOK.AutoSize = true;
             this.checkBoxPCConnectionToDiveSimOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxPCConnectionToDiveSimOK.Location = new System.Drawing.Point(706, 307);
+            this.checkBoxPCConnectionToDiveSimOK.Location = new System.Drawing.Point(706, 277);
             this.checkBoxPCConnectionToDiveSimOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPCConnectionToDiveSimOK.Name = "checkBoxPCConnectionToDiveSimOK";
             this.checkBoxPCConnectionToDiveSimOK.Size = new System.Drawing.Size(47, 21);
@@ -731,7 +736,7 @@
             // 
             this.checkBoxUSBCableOK.AutoSize = true;
             this.checkBoxUSBCableOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxUSBCableOK.Location = new System.Drawing.Point(236, 546);
+            this.checkBoxUSBCableOK.Location = new System.Drawing.Point(236, 521);
             this.checkBoxUSBCableOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxUSBCableOK.Name = "checkBoxUSBCableOK";
             this.checkBoxUSBCableOK.Size = new System.Drawing.Size(47, 21);
@@ -743,7 +748,7 @@
             // 
             this.checkBoxSOSMessageFAIL.AutoSize = true;
             this.checkBoxSOSMessageFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxSOSMessageFAIL.Location = new System.Drawing.Point(808, 244);
+            this.checkBoxSOSMessageFAIL.Location = new System.Drawing.Point(808, 214);
             this.checkBoxSOSMessageFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxSOSMessageFAIL.Name = "checkBoxSOSMessageFAIL";
             this.checkBoxSOSMessageFAIL.Size = new System.Drawing.Size(55, 21);
@@ -755,7 +760,7 @@
             // 
             this.checkBoxCoverOK.AutoSize = true;
             this.checkBoxCoverOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxCoverOK.Location = new System.Drawing.Point(190, 417);
+            this.checkBoxCoverOK.Location = new System.Drawing.Point(190, 392);
             this.checkBoxCoverOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCoverOK.Name = "checkBoxCoverOK";
             this.checkBoxCoverOK.Size = new System.Drawing.Size(47, 21);
@@ -767,7 +772,7 @@
             // 
             this.checkBoxLoadMessageFAIL.AutoSize = true;
             this.checkBoxLoadMessageFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxLoadMessageFAIL.Location = new System.Drawing.Point(808, 341);
+            this.checkBoxLoadMessageFAIL.Location = new System.Drawing.Point(808, 311);
             this.checkBoxLoadMessageFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxLoadMessageFAIL.Name = "checkBoxLoadMessageFAIL";
             this.checkBoxLoadMessageFAIL.Size = new System.Drawing.Size(55, 21);
@@ -779,7 +784,7 @@
             // 
             this.checkBoxPowerSupplyFAIL.AutoSize = true;
             this.checkBoxPowerSupplyFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxPowerSupplyFAIL.Location = new System.Drawing.Point(298, 576);
+            this.checkBoxPowerSupplyFAIL.Location = new System.Drawing.Point(298, 551);
             this.checkBoxPowerSupplyFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPowerSupplyFAIL.Name = "checkBoxPowerSupplyFAIL";
             this.checkBoxPowerSupplyFAIL.Size = new System.Drawing.Size(55, 21);
@@ -791,7 +796,7 @@
             // 
             this.checkBoxDateTimeFAIL.AutoSize = true;
             this.checkBoxDateTimeFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxDateTimeFAIL.Location = new System.Drawing.Point(808, 430);
+            this.checkBoxDateTimeFAIL.Location = new System.Drawing.Point(808, 400);
             this.checkBoxDateTimeFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxDateTimeFAIL.Name = "checkBoxDateTimeFAIL";
             this.checkBoxDateTimeFAIL.Size = new System.Drawing.Size(55, 21);
@@ -803,7 +808,7 @@
             // 
             this.checkBoxAntenaFAIL.AutoSize = true;
             this.checkBoxAntenaFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxAntenaFAIL.Location = new System.Drawing.Point(212, 219);
+            this.checkBoxAntenaFAIL.Location = new System.Drawing.Point(212, 194);
             this.checkBoxAntenaFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxAntenaFAIL.Name = "checkBoxAntenaFAIL";
             this.checkBoxAntenaFAIL.Size = new System.Drawing.Size(55, 21);
@@ -815,7 +820,7 @@
             // 
             this.checkBoxUSBCableFAIL.AutoSize = true;
             this.checkBoxUSBCableFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxUSBCableFAIL.Location = new System.Drawing.Point(298, 546);
+            this.checkBoxUSBCableFAIL.Location = new System.Drawing.Point(298, 521);
             this.checkBoxUSBCableFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxUSBCableFAIL.Name = "checkBoxUSBCableFAIL";
             this.checkBoxUSBCableFAIL.Size = new System.Drawing.Size(55, 21);
@@ -827,7 +832,7 @@
             // 
             this.checkBoxMessageBetween2UDI28WristFAIL.AutoSize = true;
             this.checkBoxMessageBetween2UDI28WristFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxMessageBetween2UDI28WristFAIL.Location = new System.Drawing.Point(808, 213);
+            this.checkBoxMessageBetween2UDI28WristFAIL.Location = new System.Drawing.Point(808, 183);
             this.checkBoxMessageBetween2UDI28WristFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxMessageBetween2UDI28WristFAIL.Name = "checkBoxMessageBetween2UDI28WristFAIL";
             this.checkBoxMessageBetween2UDI28WristFAIL.Size = new System.Drawing.Size(55, 21);
@@ -839,7 +844,7 @@
             // 
             this.checkBoxCoverFAIL.AutoSize = true;
             this.checkBoxCoverFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxCoverFAIL.Location = new System.Drawing.Point(252, 416);
+            this.checkBoxCoverFAIL.Location = new System.Drawing.Point(252, 391);
             this.checkBoxCoverFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCoverFAIL.Name = "checkBoxCoverFAIL";
             this.checkBoxCoverFAIL.Size = new System.Drawing.Size(55, 21);
@@ -851,7 +856,7 @@
             // 
             this.checkBoxPCConnectionToDiveSimFAIL.AutoSize = true;
             this.checkBoxPCConnectionToDiveSimFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxPCConnectionToDiveSimFAIL.Location = new System.Drawing.Point(808, 307);
+            this.checkBoxPCConnectionToDiveSimFAIL.Location = new System.Drawing.Point(808, 277);
             this.checkBoxPCConnectionToDiveSimFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPCConnectionToDiveSimFAIL.Name = "checkBoxPCConnectionToDiveSimFAIL";
             this.checkBoxPCConnectionToDiveSimFAIL.Size = new System.Drawing.Size(55, 21);
@@ -863,7 +868,7 @@
             // 
             this.checkBoxScrewOK.AutoSize = true;
             this.checkBoxScrewOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxScrewOK.Location = new System.Drawing.Point(152, 274);
+            this.checkBoxScrewOK.Location = new System.Drawing.Point(152, 249);
             this.checkBoxScrewOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxScrewOK.Name = "checkBoxScrewOK";
             this.checkBoxScrewOK.Size = new System.Drawing.Size(47, 21);
@@ -875,7 +880,7 @@
             // 
             this.checkBoxCaseOK.AutoSize = true;
             this.checkBoxCaseOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxCaseOK.Location = new System.Drawing.Point(236, 607);
+            this.checkBoxCaseOK.Location = new System.Drawing.Point(236, 582);
             this.checkBoxCaseOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCaseOK.Name = "checkBoxCaseOK";
             this.checkBoxCaseOK.Size = new System.Drawing.Size(47, 21);
@@ -887,7 +892,7 @@
             // 
             this.checkBoxScrewFAIL.AutoSize = true;
             this.checkBoxScrewFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxScrewFAIL.Location = new System.Drawing.Point(212, 276);
+            this.checkBoxScrewFAIL.Location = new System.Drawing.Point(212, 251);
             this.checkBoxScrewFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxScrewFAIL.Name = "checkBoxScrewFAIL";
             this.checkBoxScrewFAIL.Size = new System.Drawing.Size(55, 21);
@@ -899,7 +904,7 @@
             // 
             this.checkBoxLoadNamesOK.AutoSize = true;
             this.checkBoxLoadNamesOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxLoadNamesOK.Location = new System.Drawing.Point(706, 369);
+            this.checkBoxLoadNamesOK.Location = new System.Drawing.Point(706, 339);
             this.checkBoxLoadNamesOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxLoadNamesOK.Name = "checkBoxLoadNamesOK";
             this.checkBoxLoadNamesOK.Size = new System.Drawing.Size(47, 21);
@@ -911,7 +916,7 @@
             // 
             this.checkBoxChargingLightOK.AutoSize = true;
             this.checkBoxChargingLightOK.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxChargingLightOK.Location = new System.Drawing.Point(706, 459);
+            this.checkBoxChargingLightOK.Location = new System.Drawing.Point(706, 429);
             this.checkBoxChargingLightOK.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxChargingLightOK.Name = "checkBoxChargingLightOK";
             this.checkBoxChargingLightOK.Size = new System.Drawing.Size(47, 21);
@@ -923,7 +928,7 @@
             // 
             this.checkBoxLoadNamesFAIL.AutoSize = true;
             this.checkBoxLoadNamesFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxLoadNamesFAIL.Location = new System.Drawing.Point(808, 369);
+            this.checkBoxLoadNamesFAIL.Location = new System.Drawing.Point(808, 339);
             this.checkBoxLoadNamesFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxLoadNamesFAIL.Name = "checkBoxLoadNamesFAIL";
             this.checkBoxLoadNamesFAIL.Size = new System.Drawing.Size(55, 21);
@@ -935,7 +940,7 @@
             // 
             this.checkBoxChagingLightFAIL.AutoSize = true;
             this.checkBoxChagingLightFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxChagingLightFAIL.Location = new System.Drawing.Point(810, 459);
+            this.checkBoxChagingLightFAIL.Location = new System.Drawing.Point(810, 429);
             this.checkBoxChagingLightFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxChagingLightFAIL.Name = "checkBoxChagingLightFAIL";
             this.checkBoxChagingLightFAIL.Size = new System.Drawing.Size(55, 21);
@@ -947,7 +952,7 @@
             // 
             this.checkBoxCaseFAIL.AutoSize = true;
             this.checkBoxCaseFAIL.ForeColor = System.Drawing.Color.Black;
-            this.checkBoxCaseFAIL.Location = new System.Drawing.Point(298, 604);
+            this.checkBoxCaseFAIL.Location = new System.Drawing.Point(298, 579);
             this.checkBoxCaseFAIL.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCaseFAIL.Name = "checkBoxCaseFAIL";
             this.checkBoxCaseFAIL.Size = new System.Drawing.Size(55, 21);
@@ -959,7 +964,7 @@
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.button1.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.button1.Location = new System.Drawing.Point(438, 745);
+            this.button1.Location = new System.Drawing.Point(440, 807);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(408, 48);
@@ -972,7 +977,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Arial Narrow", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(73, 64);
+            this.label3.Location = new System.Drawing.Point(73, 39);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(74, 25);
@@ -982,7 +987,7 @@
             // textBoxUdiSerielNumber
             // 
             this.textBoxUdiSerielNumber.Font = new System.Drawing.Font("Microsoft YaHei UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxUdiSerielNumber.Location = new System.Drawing.Point(173, 64);
+            this.textBoxUdiSerielNumber.Location = new System.Drawing.Point(173, 39);
             this.textBoxUdiSerielNumber.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxUdiSerielNumber.Multiline = true;
             this.textBoxUdiSerielNumber.Name = "textBoxUdiSerielNumber";
@@ -994,7 +999,7 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label9.ForeColor = System.Drawing.Color.Black;
-            this.label9.Location = new System.Drawing.Point(433, 666);
+            this.label9.Location = new System.Drawing.Point(437, 728);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(117, 17);
@@ -1005,7 +1010,7 @@
             // 
             this.comboBox1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(582, 666);
+            this.comboBox1.Location = new System.Drawing.Point(584, 728);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(264, 23);
             this.comboBox1.Sorted = true;
@@ -1017,7 +1022,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(436, 494);
+            this.label2.Location = new System.Drawing.Point(437, 464);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(112, 17);
@@ -1026,7 +1031,7 @@
             // 
             // textBoxPressureSensor
             // 
-            this.textBoxPressureSensor.Location = new System.Drawing.Point(706, 494);
+            this.textBoxPressureSensor.Location = new System.Drawing.Point(706, 464);
             this.textBoxPressureSensor.Name = "textBoxPressureSensor";
             this.textBoxPressureSensor.Size = new System.Drawing.Size(157, 24);
             this.textBoxPressureSensor.TabIndex = 324;
@@ -1036,7 +1041,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label13.Location = new System.Drawing.Point(435, 709);
+            this.label13.Location = new System.Drawing.Point(437, 771);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(121, 17);
             this.label13.TabIndex = 334;
@@ -1044,7 +1049,7 @@
             // 
             // textBoxWaybillNumber
             // 
-            this.textBoxWaybillNumber.Location = new System.Drawing.Point(582, 706);
+            this.textBoxWaybillNumber.Location = new System.Drawing.Point(584, 768);
             this.textBoxWaybillNumber.Name = "textBoxWaybillNumber";
             this.textBoxWaybillNumber.Size = new System.Drawing.Size(120, 24);
             this.textBoxWaybillNumber.TabIndex = 333;
@@ -1052,7 +1057,7 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.button2.Location = new System.Drawing.Point(708, 702);
+            this.button2.Location = new System.Drawing.Point(710, 764);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(73, 32);
             this.button2.TabIndex = 336;
@@ -1071,6 +1076,7 @@
             this.menuStrip1.Size = new System.Drawing.Size(934, 24);
             this.menuStrip1.TabIndex = 337;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // doneToolStripMenuItem
             // 
@@ -1097,7 +1103,7 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.SteelBlue;
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Location = new System.Drawing.Point(427, 64);
+            this.panel1.Location = new System.Drawing.Point(427, 34);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(436, 52);
             this.panel1.TabIndex = 341;
@@ -1119,8 +1125,10 @@
             this.textBoxUdiVer.FormattingEnabled = true;
             this.textBoxUdiVer.Items.AddRange(new object[] {
             "UDI28-WO0035",
-            "UDI28-WON8017"});
-            this.textBoxUdiVer.Location = new System.Drawing.Point(704, 398);
+            "UDI28-WON7017",
+            "UDI28-WON8017",
+            "UDI28-WON8018"});
+            this.textBoxUdiVer.Location = new System.Drawing.Point(704, 368);
             this.textBoxUdiVer.Name = "textBoxUdiVer";
             this.textBoxUdiVer.Size = new System.Drawing.Size(159, 24);
             this.textBoxUdiVer.Sorted = true;
@@ -1133,19 +1141,84 @@
             this.textBoxTestedBy.Items.AddRange(new object[] {
             "Alona",
             "Niv"});
-            this.textBoxTestedBy.Location = new System.Drawing.Point(582, 596);
+            this.textBoxTestedBy.Location = new System.Drawing.Point(584, 658);
             this.textBoxTestedBy.Name = "textBoxTestedBy";
             this.textBoxTestedBy.Size = new System.Drawing.Size(264, 23);
             this.textBoxTestedBy.Sorted = true;
             this.textBoxTestedBy.TabIndex = 352;
             this.textBoxTestedBy.SelectedIndexChanged += new System.EventHandler(this.textBoxTestedBy_SelectedIndexChanged);
             // 
+            // comboBoxTableTag
+            // 
+            this.comboBoxTableTag.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.comboBoxTableTag.FormattingEnabled = true;
+            this.comboBoxTableTag.Items.AddRange(new object[] {
+            "2A3891"});
+            this.comboBoxTableTag.Location = new System.Drawing.Point(704, 496);
+            this.comboBoxTableTag.Name = "comboBoxTableTag";
+            this.comboBoxTableTag.Size = new System.Drawing.Size(159, 24);
+            this.comboBoxTableTag.Sorted = true;
+            this.comboBoxTableTag.TabIndex = 360;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
+            this.label15.ForeColor = System.Drawing.Color.Black;
+            this.label15.Location = new System.Drawing.Point(439, 496);
+            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(75, 17);
+            this.label15.TabIndex = 359;
+            this.label15.Text = "Table tag:";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
+            this.label17.ForeColor = System.Drawing.Color.Black;
+            this.label17.Location = new System.Drawing.Point(439, 536);
+            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(127, 17);
+            this.label17.TabIndex = 363;
+            this.label17.Text = "Udi serial correct:";
+            // 
+            // checkBoxUdiSerialCorrectFail
+            // 
+            this.checkBoxUdiSerialCorrectFail.AutoSize = true;
+            this.checkBoxUdiSerialCorrectFail.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.checkBoxUdiSerialCorrectFail.ForeColor = System.Drawing.Color.Black;
+            this.checkBoxUdiSerialCorrectFail.Location = new System.Drawing.Point(808, 536);
+            this.checkBoxUdiSerialCorrectFail.Name = "checkBoxUdiSerialCorrectFail";
+            this.checkBoxUdiSerialCorrectFail.Size = new System.Drawing.Size(52, 17);
+            this.checkBoxUdiSerialCorrectFail.TabIndex = 362;
+            this.checkBoxUdiSerialCorrectFail.Text = "FAIL";
+            this.checkBoxUdiSerialCorrectFail.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxUdiSerialCorrectOK
+            // 
+            this.checkBoxUdiSerialCorrectOK.AutoSize = true;
+            this.checkBoxUdiSerialCorrectOK.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.checkBoxUdiSerialCorrectOK.ForeColor = System.Drawing.Color.Black;
+            this.checkBoxUdiSerialCorrectOK.Location = new System.Drawing.Point(703, 536);
+            this.checkBoxUdiSerialCorrectOK.Name = "checkBoxUdiSerialCorrectOK";
+            this.checkBoxUdiSerialCorrectOK.Size = new System.Drawing.Size(43, 17);
+            this.checkBoxUdiSerialCorrectOK.TabIndex = 361;
+            this.checkBoxUdiSerialCorrectOK.Text = "OK";
+            this.checkBoxUdiSerialCorrectOK.UseVisualStyleBackColor = true;
+            // 
             // Udi18InspectionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(934, 843);
+            this.ClientSize = new System.Drawing.Size(934, 862);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.checkBoxUdiSerialCorrectFail);
+            this.Controls.Add(this.checkBoxUdiSerialCorrectOK);
+            this.Controls.Add(this.comboBoxTableTag);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.textBoxTestedBy);
             this.Controls.Add(this.textBoxUdiVer);
             this.Controls.Add(this.panel1);
@@ -1337,5 +1410,10 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox textBoxUdiVer;
         private System.Windows.Forms.ComboBox textBoxTestedBy;
+        private System.Windows.Forms.ComboBox comboBoxTableTag;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.CheckBox checkBoxUdiSerialCorrectFail;
+        private System.Windows.Forms.CheckBox checkBoxUdiSerialCorrectOK;
     }
 }

@@ -1,54 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Data.SqlServerCe;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Reflection;
+using System.Configuration;
+using System.Data.SQLite;
+using Dapper;
 
 namespace Project_Product_List
 {
     public partial class ADCS_BoatForm : Form
     {
-        
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-
-
+        string SavePath = Paths.Paths.ADCS_ROOT_PATH;
 
         void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string CustomerName = comboBox1.Text.Trim();
-
-            cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBox1.Items.Add(Convert.ToString(reader[0]));
-            }
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBox1.Items.Add(dr["Name"]);
+                    }
 
-            sqlConnection1.Close();
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
 
         }
 
@@ -57,78 +56,38 @@ namespace Project_Product_List
             InitializeComponent();
         }
 
-
-
-        public void InsertIntoData()
+        
+        public void InsertToDataBase()
         {
-            int counter = 1;
-            
+            int Number = 1;
+
             try
             {
-                using (SqlConnection sqlCon = new SqlConnection(connectionString))
+                using (IDbConnection cnn = new SQLiteConnection(General.LoadConnectionString()))
                 {
-                    sqlCon.Open();
-                    SqlCommand sqlCmd = new SqlCommand("ADCS_add", sqlCon);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
-
-
-                    sqlCmd.Parameters.AddWithValue("@Number", counter);
-                    sqlCmd.Parameters.AddWithValue("@Seriel_Code", textBoxUdiSerielNumber.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Screen", checkBoxScreenOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Antena", checkBoxAntenaOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Plastic", checkBoxPlasticOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Screw", checkBoxScrewOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Button_function", checkBoxButtonFunctionOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Cover", checkBoxCoverOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Message_to_all_users", checkBoxMessageToAllUsersOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Message_between_2_udi_14_wrist", checkBoxMessageBetween2UDI14WristOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@SOS_message", checkBoxSOSMessageOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Compass", checkBoxCompassOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@PC_Connection", checkBoxPCConnectionToDiveSimOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Load_Messages", checkBoxLoadMessageOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Load_Names", checkBoxLoadNamesOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Update_udi_ver", textBoxUpdateUDI.Text.Trim());//
-                    sqlCmd.Parameters.AddWithValue("@Date_Time", checkBoxDateTimeOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Charging", checkBoxChargingLightOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Quick_connector", checkBoxQuickConnectorOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@USBcable", checkBoxUSBCableOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Power_Supply", checkBoxPowerSupplyOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Case_", checkBoxCaseOK.Checked);
-                    sqlCmd.Parameters.AddWithValue("@Date", dateTimePicker1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Tested_by", textBoxTestedBy.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Signature", textBoxSignature.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Customer_Name", comboBox1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@WaybillNumber", textBoxWaybillNumber.Text.Trim());
-
-                    sqlCmd.ExecuteNonQuery();
-                    sqlCon.Close();
-                    MessageBox.Show("Done Successfully !");
+                    cnn.Execute("insert into ADCS (Number, Seriel_Code, Antena, Plastic, Screw, Button_function, MESSAGE_TO_UDI28_WRIST_UNIT, PC_Connection, Update_ver_ADCS_A, Charging, USBcable, Power_Supply, Case_, Date, Tested_by, Signature, Customer_Name, WaybillNumber, Serial_Correct, Leds, AntennaSN, BluetoothConnectionToTablet, Update_ver_ADCS_B) values ('" + Number + "','" + textBoxUdiSerielNumber.Text.Trim() + "', '"  + Convert.ToInt32(checkBoxAntenaOK.Checked) + "' , '" + Convert.ToInt32(checkBoxPlasticOK.Checked) + "', '" + Convert.ToInt32(checkBoxScrewOK.Checked) + "', '" + Convert.ToInt32(checkBoxButtonFunctionOK.Checked) + "','"  + Convert.ToInt32(checkBoxMessageToAllUsersOK.Checked) + "', '"  + Convert.ToInt32(checkBoxPCConnectionToDiveSimOK.Checked)  + "', '" + textBoxUpdateUDI_VER_A.Text.Trim() + "', '"  + Convert.ToInt32(checkBoxChargingLightOK.Checked) + "','" + Convert.ToInt32(checkBoxUSBCableOK.Checked) + "', '" + Convert.ToInt32(checkBoxPowerSupplyOK.Checked) + "', '" + Convert.ToInt32(checkBoxCaseOK.Checked) + "', '" + dateTimePicker1.Text.Trim() + "', '" + textBoxTestedBy.Text.Trim() + "', '" + textBoxSignature.Text.Trim() + "', '" + comboBox1.Text.Trim() + "', '" + textBoxWaybillNumber.Text.Trim() + "', '" + Convert.ToInt32(checkBoxUdiSerialCorrectOK.Checked) + "', '" + Convert.ToInt32(checkBoxUdiLedsOK.Checked) + "','" + textBoxAntennaSN.Text.Trim() + "','" + Convert.ToInt32(checkBoxBluetoothConnectionToTablet.Checked) + "','" + textBoxUpdateUDI_VER_B.Text.Trim() + "')");
                 }
+
+                MessageBox.Show("Done Successfully !");
+
+
             }
             catch (SqlException ex)
             {
 
                 Console.WriteLine(ex.ToString());
             }
-
-
-            
-
         }
-
-
         private void SendToPrinter_ADCS()
         {
-            int DOCyear = dateTimePicker1.Value.Year;
 
             ProcessStartInfo info = new ProcessStartInfo();
             info.Verb = "print";
 
-            string SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "ADCS" + @"\";
 
             int PDFcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length); // Will Retrieve count of PDF files  in directry
 
-            info.FileName = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "ADCS" + @"\" + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
+            info.FileName = SavePath + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
 
             info.CreateNoWindow = true;
             info.WindowStyle = ProcessWindowStyle.Hidden;
@@ -164,8 +123,8 @@ namespace Project_Product_List
             {
                 try
                 {
-                    InsertIntoData();
-                    CreateInspectionTestDocument();
+                    InsertToDataBase();
+                    PDFCreator();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {                       
                         try
@@ -182,7 +141,7 @@ namespace Project_Product_List
                 catch (Exception Ex)
                 {
                     MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so AT document will be created, but it will not be stored in the Base database");
-                    CreateInspectionTestDocument();
+                    PDFCreator();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         try
@@ -232,13 +191,25 @@ namespace Project_Product_List
         private void ADCS_BoatForm_Load(object sender, EventArgs e)
         {
 
-            int DOCyear = dateTimePicker1.Value.Year;
-
-            string SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "ADCS" + @"\";
 
             if (!Directory.Exists(SavePath))
             {
-                Directory.CreateDirectory(SavePath);
+                try
+                {
+                    Directory.CreateDirectory(SavePath);
+                }
+                catch
+                {
+                    // Bring up a dialog to chose a folder path in which to open or save a file.
+                    var folderBrowserDialog1 = new FolderBrowserDialog();
+
+                    // Show the FolderBrowserDialog.
+                    DialogResult result = folderBrowserDialog1.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        SavePath = folderBrowserDialog1.SelectedPath;
+                    }
+                }
             }
 
             Load_Customers_To_ComboBox();
@@ -250,16 +221,13 @@ namespace Project_Product_List
         {
         }
 
-        void CreateInspectionTestDocument()
+        void PDFCreator()
         {
 
             ///////////// Creating the document  /////////////
 
             FontFactory.RegisterDirectories();
 
-            int DOCyear = dateTimePicker1.Value.Year;
-
-            string SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "ADCS" + @"\";
 
             if (!Directory.Exists(SavePath))
             {
@@ -270,7 +238,7 @@ namespace Project_Product_List
             int PDFcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length) + 1; // Will Retrieve count of PDF files  in directry
 
 
-            SavePath = "U:" + @"\" + "Acceptance Testing" + @"\" + DOCyear + @"\" + "ADCS" + @"\" + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
+            SavePath = SavePath + textBoxUdiSerielNumber.Text + "_AT" + PDFcounter + ".pdf";
 
 
 
@@ -296,7 +264,7 @@ namespace Project_Product_List
             // Signature logo
             iTextSharp.text.Image SignaturePNG = iTextSharp.text.Image.GetInstance("SignatureutcPNG.png");
             SignaturePNG.ScalePercent(75f);
-            SignaturePNG.SetAbsolutePosition(doc.PageSize.Width - 170f - 72f, doc.PageSize.Height - 250f - 550f);
+            SignaturePNG.SetAbsolutePosition(doc.PageSize.Width - 170f - 72f, doc.PageSize.Height - 250f - 580f);
 
             ///////////////////////////////////////////////////////
 
@@ -307,19 +275,21 @@ namespace Project_Product_List
             Chunk productName = new Chunk("ADCS Inspection.", FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLUE));
 
             Paragraph lineDown = new Paragraph("\n");
-            Chunk SerialNumberAndDate = new Chunk("              UDI S/N: " + textBoxUdiSerielNumber.Text + "           " + "Date: " + dateTimePicker1.Value.ToString("dd-MM-yyyy"), FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18));
+            Chunk SerialNumberAndDate = new Chunk("              Boat unit S/N: " + textBoxUdiSerielNumber.Text + "           " + "Date: " + dateTimePicker1.Value.ToString("dd-MM-yyyy"), FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18));
+            Chunk AntennaSN = new Chunk("              Antenna S/N: " + textBoxAntennaSN.Text , FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18));
             //SerialNumberAndDate.SetUnderline(0.5f, -1.5f);
 
 
-            ////////////////////////   table1 - Visual test   ///////////////////////////////
+            ////////////////////////   table1 - Visual test   ///////////////////////////
+            ///////
 
             Paragraph VZ = new Paragraph("                                                                  Visual test", FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12));
 
 
             PdfPTable table1 = new PdfPTable(3);
             PdfPCell cell1 = new PdfPCell();
-            cell1.Colspan = 4;
-            cell1.HorizontalAlignment = 4;
+            cell1.Colspan = 3;
+            cell1.HorizontalAlignment = 3;
             table1.AddCell(cell1);
 
 
@@ -328,18 +298,20 @@ namespace Project_Product_List
             table1.AddCell("Procedure");
             table1.AddCell("Result");
 
-            table1.AddCell("1");
-            table1.AddCell("Screen");
-            bool Screen = (checkBoxScreenOK.Checked);
-            bool NOT_CHECKED_Screen = (!checkBoxScreenOK.Checked) && (!checkBoxScreenFAIL.Checked);
+            
 
-            if (NOT_CHECKED_Screen)
+            table1.AddCell("1");
+            table1.AddCell("Super sensitive antenna");
+            bool SSA = checkBoxAntenaOK.Checked;
+            bool NOT_CHECKED_SSA = (!checkBoxAntenaOK.Checked) && (!checkBoxAntenaFAIL.Checked);
+
+            if (NOT_CHECKED_SSA)
             {
                 table1.AddCell("NOT CHECKED");
             }
             else
             {
-                if (Screen)
+                if (SSA)
                 {
                     table1.AddCell("OK");
                 }
@@ -348,31 +320,10 @@ namespace Project_Product_List
                     table1.AddCell("FAIL");
                 }
             }
+
+
 
             table1.AddCell("2");
-            table1.AddCell("Antena");
-            bool Antena = checkBoxAntenaOK.Checked;
-            bool NOT_CHECKED_Antena = (!checkBoxAntenaOK.Checked) && (!checkBoxAntenaFAIL.Checked);
-
-            if (NOT_CHECKED_Antena)
-            {
-                table1.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (Antena)
-                {
-                    table1.AddCell("OK");
-                }
-                else
-                {
-                    table1.AddCell("FAIL");
-                }
-            }
-
-
-
-            table1.AddCell("3");
             table1.AddCell("Plastic");
             bool Plastic = checkBoxPlasticOK.Checked;
             bool NOT_CHECKED_Plastic = (!checkBoxPlasticOK.Checked) && (!checkBoxPlasticFAIL.Checked);
@@ -397,7 +348,7 @@ namespace Project_Product_List
 
 
 
-            table1.AddCell("4");
+            table1.AddCell("3");
             table1.AddCell("Screw");
             bool Screw = checkBoxScrewOK.Checked;
             bool NOT_CHECKED_Screw = (!checkBoxScrewOK.Checked) && (!checkBoxScrewFAIL.Checked);
@@ -435,7 +386,7 @@ namespace Project_Product_List
             table2.AddCell("Procedure");
             table2.AddCell("Result");
 
-            table2.AddCell("5");
+            table2.AddCell("4");
             table2.AddCell("Button function");
             bool ButtonFunction = (checkBoxButtonFunctionOK.Checked);
             bool NOT_CHECKED_ButtonFunction = (!checkBoxButtonFunctionOK.Checked) && (!checkBoxButtonFunctionFAIL.Checked);
@@ -457,27 +408,6 @@ namespace Project_Product_List
             }
 
 
-            table2.AddCell("6");
-            table2.AddCell("Covers");
-            bool Covers = (checkBoxCoverOK.Checked);
-            bool NOT_CHECKED_Covers = (!checkBoxCoverOK.Checked) && (!checkBoxCoverFAIL.Checked);
-
-            if (NOT_CHECKED_Covers)
-            {
-                table2.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (Covers)
-                {
-                    table2.AddCell("OK");
-                }
-                else
-                {
-                    table2.AddCell("FAIL");
-                }
-            }
-
             ////////////////////////   END table2 - Mechanical test   ///////////////////////////////
 
 
@@ -488,8 +418,8 @@ namespace Project_Product_List
 
             PdfPTable table3 = new PdfPTable(3);
             PdfPCell cell3 = new PdfPCell();
-            cell3.Colspan = 10;
-            cell3.HorizontalAlignment = 10;
+            cell3.Colspan = 5;
+            cell3.HorizontalAlignment = 5;
             table3.AddCell(cell3);
 
 
@@ -499,9 +429,29 @@ namespace Project_Product_List
             table3.AddCell("Result");
 
 
+            table3.AddCell("5");
+            table3.AddCell("Bluetooth connection to tablet");
+            bool BCTT = (checkBoxBluetoothConnectionToTablet.Checked);
+            bool NOT_CHECKED_BCTT = (!checkBoxBluetoothConnectionToTablet.Checked) && (!checkBoxBluetoothConnectionToTablet.Checked);
 
-            table3.AddCell("7");
-            table3.AddCell("Message to all users");
+            if (NOT_CHECKED_BCTT)
+            {
+                table3.AddCell("NOT CHECKED");
+            }
+            else
+            {
+                if (BCTT)
+                {
+                    table3.AddCell("OK");
+                }
+                else
+                {
+                    table3.AddCell("FAIL");
+                }
+            }
+
+            table3.AddCell("6");
+            table3.AddCell("Message to UDI28 wrist unit");
             bool MTAU = (checkBoxMessageToAllUsersOK.Checked);
             bool NOT_CHECKED_MTAU = (!checkBoxMessageToAllUsersOK.Checked) && (!checkBoxMessageToAllUsersFAIL.Checked);
 
@@ -521,70 +471,10 @@ namespace Project_Product_List
                 }
             }
 
-            table3.AddCell("8");
-            table3.AddCell("Message between 2 ADCS Wrist");
-            bool MB2UW = (checkBoxMessageBetween2UDI14WristOK.Checked);
-            bool NOT_CHECKED_MB2UW = (!checkBoxMessageBetween2UDI14WristOK.Checked) && (!checkBoxMessageBetween2UDI14WristFAIL.Checked);
+            
 
-            if (NOT_CHECKED_MB2UW)
-            {
-                table3.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (MB2UW)
-                {
-                    table3.AddCell("OK");
-                }
-                else
-                {
-                    table3.AddCell("FAIL");
-                }
-            }
 
-            table3.AddCell("9");
-            table3.AddCell("SOS message");
-            bool SOSM = (checkBoxSOSMessageOK.Checked);
-            bool NOT_CHECKED_SOSM = (!checkBoxSOSMessageOK.Checked) && (!checkBoxSOSMessageFAIL.Checked);
-
-            if (NOT_CHECKED_SOSM)
-            {
-                table3.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (SOSM)
-                {
-                    table3.AddCell("OK");
-                }
-                else
-                {
-                    table3.AddCell("FAIL");
-                }
-            }
-
-            table3.AddCell("10");
-            table3.AddCell("Compass");
-            bool Compass = (checkBoxCompassOK.Checked);
-            bool NOT_CHECKED_Compass = (!checkBoxCompassOK.Checked) && (!checkBoxCompassFAIL.Checked);
-
-            if (NOT_CHECKED_Compass)
-            {
-                table3.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (Compass)
-                {
-                    table3.AddCell("OK");
-                }
-                else
-                {
-                    table3.AddCell("FAIL");
-                }
-            }
-
-            table3.AddCell("11");
+            table3.AddCell("7");
             table3.AddCell("PC Connection");
             bool PCConnection = (checkBoxPCConnectionToDiveSimOK.Checked);
             bool NOT_CHECKED_PCConnection = (!checkBoxPCConnectionToDiveSimOK.Checked) && (!checkBoxPCConnectionToDiveSimFAIL.Checked);
@@ -605,75 +495,18 @@ namespace Project_Product_List
                 }
             }
 
-            table3.AddCell("12");
-            table3.AddCell("Load Messages");
-            bool LoadMessages = (checkBoxLoadMessageOK.Checked);
-            bool NOT_CHECKED_LoadMessages = (!checkBoxLoadMessageOK.Checked) && (!checkBoxLoadMessageFAIL.Checked);
+            
 
-            if (NOT_CHECKED_LoadMessages)
-            {
-                table3.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (LoadMessages)
-                {
-                    table3.AddCell("OK");
-                }
-                else
-                {
-                    table3.AddCell("FAIL");
-                }
-            }
+            table3.AddCell("8");
+            table3.AddCell("Update Ver ADCS A");
+            table3.AddCell(textBoxUpdateUDI_VER_A.Text);
 
-            table3.AddCell("13");
-            table3.AddCell("Load Names");
-            bool LoadNames = (checkBoxLoadNamesOK.Checked);
-            bool NOT_CHECKED_LoadNames = (!checkBoxLoadNamesOK.Checked) && (!checkBoxLoadNamesFAIL.Checked);
-
-            if (NOT_CHECKED_LoadNames)
-            {
-                table3.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (LoadNames)
-                {
-                    table3.AddCell("OK");
-                }
-                else
-                {
-                    table3.AddCell("FAIL");
-                }
-            }
-
-            table3.AddCell("14");
-            table3.AddCell("Update Udi Ver");
-            table3.AddCell(textBoxUpdateUDI.Text);
+            table3.AddCell("9");
+            table3.AddCell("Update Ver ADCS B");
+            table3.AddCell(textBoxUpdateUDI_VER_B.Text);
 
 
-            table3.AddCell("15");
-            table3.AddCell("Time & Date");
-            bool TimeDate = (checkBoxDateTimeOK.Checked);
-            bool NOT_CHECKED_TimeDate = (!checkBoxDateTimeOK.Checked) && (!checkBoxDateTimeFAIL.Checked);
-
-            if (NOT_CHECKED_TimeDate)
-            {
-                table3.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (TimeDate)
-                {
-                    table3.AddCell("OK");
-                }
-                else
-                {
-                    table3.AddCell("FAIL");
-                }
-            }
-
-            table3.AddCell("16");
+            table3.AddCell("10");
             table3.AddCell("Charging");
             bool ChargingLight = (checkBoxChargingLightOK.Checked);
             bool NOT_CHECKED_ChargingLight = (!checkBoxChargingLightOK.Checked) && (!checkBoxChagingLightFAIL.Checked);
@@ -694,6 +527,52 @@ namespace Project_Product_List
                 }
             }
 
+
+            
+
+
+            table3.AddCell("11");
+            table3.AddCell("Serial Number Correct");
+            bool SerialCorrectFail = (checkBoxUdiSerialCorrectOK.Checked);
+            bool NOT_CHECKED_SerialCorrect = (!checkBoxUdiSerialCorrectOK.Checked) && (!checkBoxUdiSerialCorrectFail.Checked);
+
+            if (NOT_CHECKED_SerialCorrect)
+            {
+                table3.AddCell("NOT CHECKED");
+            }
+            else
+            {
+                if (SerialCorrectFail)
+                {
+                    table3.AddCell("OK");
+                }
+                else
+                {
+                    table3.AddCell("FAIL");
+                }
+            }
+
+
+            table3.AddCell("12");
+            table3.AddCell("Leds");
+            bool UdiLeds = (checkBoxUdiLedsOK.Checked);
+            bool NOT_CHECKED_UdiLeds = (!checkBoxUdiLedsOK.Checked) && (!checkBoxUdiLedsFail.Checked);
+
+            if (NOT_CHECKED_UdiLeds)
+            {
+                table3.AddCell("NOT CHECKED");
+            }
+            else
+            {
+                if (UdiLeds)
+                {
+                    table3.AddCell("OK");
+                }
+                else
+                {
+                    table3.AddCell("FAIL");
+                }
+            }
 
             ////////////////////////  END table3 - Tests  ///////////////////////////////
 
@@ -722,28 +601,9 @@ namespace Project_Product_List
 
 
 
-            table4.AddCell("17");
-            table4.AddCell("Quick connector");
-            bool QuickConnector = (checkBoxQuickConnectorOK.Checked);
-            bool NOT_CHECKED_QuickConnector = (!checkBoxQuickConnectorOK.Checked) && (!checkBoxQuickConnectorFAIL.Checked);
+          
 
-            if (NOT_CHECKED_QuickConnector)
-            {
-                table4.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (QuickConnector)
-                {
-                    table4.AddCell("OK");
-                }
-                else
-                {
-                    table4.AddCell("FAIL");
-                }
-            }
-
-            table4.AddCell("18");
+            table4.AddCell("13");
             table4.AddCell("USB Cable");
             bool USBCable = (checkBoxUSBCableOK.Checked);
             bool NOT_CHECKED_USBCable = (!checkBoxUSBCableOK.Checked) && (!checkBoxUSBCableFAIL.Checked);
@@ -764,7 +624,7 @@ namespace Project_Product_List
                 }
             }
 
-            table4.AddCell("19");
+            table4.AddCell("14");
             table4.AddCell("Power supply");
             bool PowerSupply = (checkBoxPowerSupplyOK.Checked);
             bool NOT_CHECKED_PowerSupply = (!checkBoxPowerSupplyOK.Checked) && (!checkBoxPowerSupplyFAIL.Checked);
@@ -785,7 +645,7 @@ namespace Project_Product_List
                 }
             }//
 
-            table4.AddCell("20");
+            table4.AddCell("15");
             table4.AddCell("Case");
             bool Case = (checkBoxCaseOK.Checked);
             bool NOT_CHECKED_Case = (!checkBoxCaseOK.Checked) && (!checkBoxCaseFAIL.Checked);
@@ -806,26 +666,7 @@ namespace Project_Product_List
                 }
             }
 
-            table4.AddCell("21");
-            table4.AddCell("Cover");
-            bool Cover = (checkBoxCoverColorOK.Checked);
-            bool NOT_CHECKED_Cover = (!checkBoxCoverColorOK.Checked) && (!checkBoxCoverColorFAIL.Checked);
-
-            if (NOT_CHECKED_Cover)
-            {
-                table4.AddCell("NOT CHECKED");
-            }
-            else
-            {
-                if (Cover)
-                {
-                    table4.AddCell("OK");
-                }
-                else
-                {
-                    table4.AddCell("FAIL");
-                }
-            }
+            
             //////////////////////// END table4 - Package contents  ///////////////////////////////
 
 
@@ -847,6 +688,8 @@ namespace Project_Product_List
             doc.Add(productName);
             doc.Add(lineDown);
             doc.Add(SerialNumberAndDate);
+            doc.Add(lineDown);
+            doc.Add(AntennaSN);
             doc.Add(lineDown);
             doc.Add(VZ);
             doc.Add(lineDown);
@@ -878,14 +721,14 @@ namespace Project_Product_List
 
         private void button2_Click(object sender, EventArgs e)
         {
-            CreateInspectionTestDocument();
+            PDFCreator();
             clearFieldsAfterDone();
         }
 
 
         public void Update_WayBill()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
+            SqlConnection sqlConnection1 = new SqlConnection(Paths.Paths.UTC_SQL_CONNECTION_NEW);
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader;
             string SerielNumber = textBoxUdiSerielNumber.Text.Trim();
@@ -942,7 +785,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\ACCEPTING TESTS.docx";
+            pi.FileName = Paths.Paths.ADCS_HELP_FILE;
             p.StartInfo = pi;
 
             try
@@ -957,8 +800,8 @@ namespace Project_Product_List
 
         private void doneToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            InsertIntoData();
-            CreateInspectionTestDocument();
+            InsertToDataBase();
+            PDFCreator();
             clearFieldsAfterDone();
         }
 

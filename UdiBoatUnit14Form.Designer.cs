@@ -121,6 +121,14 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxUpdateUDI = new System.Windows.Forms.ComboBox();
             this.textBoxTestedBy = new System.Windows.Forms.ComboBox();
+            this.comboBoxTableTag = new System.Windows.Forms.ComboBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.checkBoxUdiSerialCorrectFail = new System.Windows.Forms.CheckBox();
+            this.checkBoxUdiSerialCorrectOK = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.checkBoxUdiLedsFail = new System.Windows.Forms.CheckBox();
+            this.checkBoxUdiLedsOK = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -141,7 +149,7 @@
             this.button3.BackColor = System.Drawing.Color.White;
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold);
             this.button3.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.button3.Location = new System.Drawing.Point(515, 788);
+            this.button3.Location = new System.Drawing.Point(162, 843);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(344, 45);
             this.button3.TabIndex = 221;
@@ -435,7 +443,7 @@
             // 
             this.label46.AutoSize = true;
             this.label46.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label46.Location = new System.Drawing.Point(509, 618);
+            this.label46.Location = new System.Drawing.Point(508, 724);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(76, 17);
             this.label46.TabIndex = 55;
@@ -445,7 +453,7 @@
             // 
             this.label51.AutoSize = true;
             this.label51.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label51.Location = new System.Drawing.Point(510, 646);
+            this.label51.Location = new System.Drawing.Point(509, 752);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(76, 17);
             this.label51.TabIndex = 56;
@@ -454,14 +462,14 @@
             // textBoxSignature
             // 
             this.textBoxSignature.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-            this.textBoxSignature.Location = new System.Drawing.Point(659, 641);
+            this.textBoxSignature.Location = new System.Drawing.Point(658, 747);
             this.textBoxSignature.Name = "textBoxSignature";
             this.textBoxSignature.Size = new System.Drawing.Size(200, 21);
             this.textBoxSignature.TabIndex = 58;
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(659, 582);
+            this.dateTimePicker1.Location = new System.Drawing.Point(658, 688);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker1.TabIndex = 59;
@@ -470,7 +478,7 @@
             // 
             this.label52.AutoSize = true;
             this.label52.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label52.Location = new System.Drawing.Point(512, 586);
+            this.label52.Location = new System.Drawing.Point(511, 692);
             this.label52.Name = "label52";
             this.label52.Size = new System.Drawing.Size(43, 17);
             this.label52.TabIndex = 60;
@@ -481,7 +489,7 @@
             this.label54.AutoSize = true;
             this.label54.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.label54.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.label54.Location = new System.Drawing.Point(506, 543);
+            this.label54.Location = new System.Drawing.Point(505, 649);
             this.label54.Name = "label54";
             this.label54.Size = new System.Drawing.Size(80, 20);
             this.label54.TabIndex = 62;
@@ -491,7 +499,7 @@
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.button1.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.button1.Location = new System.Drawing.Point(515, 737);
+            this.button1.Location = new System.Drawing.Point(514, 843);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(344, 45);
             this.button1.TabIndex = 63;
@@ -966,7 +974,7 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label9.ForeColor = System.Drawing.Color.Black;
-            this.label9.Location = new System.Drawing.Point(509, 674);
+            this.label9.Location = new System.Drawing.Point(508, 780);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(117, 17);
@@ -977,7 +985,7 @@
             // 
             this.comboBox1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(659, 674);
+            this.comboBox1.Location = new System.Drawing.Point(658, 780);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(200, 23);
             this.comboBox1.Sorted = true;
@@ -987,7 +995,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label13.Location = new System.Drawing.Point(512, 707);
+            this.label13.Location = new System.Drawing.Point(511, 813);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(121, 17);
             this.label13.TabIndex = 334;
@@ -995,7 +1003,7 @@
             // 
             // textBoxWaybillNumber
             // 
-            this.textBoxWaybillNumber.Location = new System.Drawing.Point(659, 704);
+            this.textBoxWaybillNumber.Location = new System.Drawing.Point(658, 810);
             this.textBoxWaybillNumber.Name = "textBoxWaybillNumber";
             this.textBoxWaybillNumber.Size = new System.Drawing.Size(120, 20);
             this.textBoxWaybillNumber.TabIndex = 333;
@@ -1003,7 +1011,7 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.button2.Location = new System.Drawing.Point(785, 701);
+            this.button2.Location = new System.Drawing.Point(784, 807);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(73, 29);
             this.button2.TabIndex = 335;
@@ -1069,6 +1077,8 @@
             this.textBoxUpdateUDI.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
             this.textBoxUpdateUDI.FormattingEnabled = true;
             this.textBoxUpdateUDI.Items.AddRange(new object[] {
+            "UTC-BOK02-05",
+            "UTC-BOR02-04",
             "UTC-BOT07-09"});
             this.textBoxUpdateUDI.Location = new System.Drawing.Point(744, 414);
             this.textBoxUpdateUDI.Name = "textBoxUpdateUDI";
@@ -1083,19 +1093,123 @@
             this.textBoxTestedBy.Items.AddRange(new object[] {
             "Alona",
             "Niv"});
-            this.textBoxTestedBy.Location = new System.Drawing.Point(659, 614);
+            this.textBoxTestedBy.Location = new System.Drawing.Point(658, 720);
             this.textBoxTestedBy.Name = "textBoxTestedBy";
             this.textBoxTestedBy.Size = new System.Drawing.Size(200, 23);
             this.textBoxTestedBy.Sorted = true;
             this.textBoxTestedBy.TabIndex = 354;
             this.textBoxTestedBy.SelectedIndexChanged += new System.EventHandler(this.textBoxTestedBy_SelectedIndexChanged);
             // 
+            // comboBoxTableTag
+            // 
+            this.comboBoxTableTag.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.comboBoxTableTag.FormattingEnabled = true;
+            this.comboBoxTableTag.Items.AddRange(new object[] {
+            "047B9C"});
+            this.comboBoxTableTag.Location = new System.Drawing.Point(744, 520);
+            this.comboBoxTableTag.Name = "comboBoxTableTag";
+            this.comboBoxTableTag.Size = new System.Drawing.Size(145, 24);
+            this.comboBoxTableTag.Sorted = true;
+            this.comboBoxTableTag.TabIndex = 358;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
+            this.label15.ForeColor = System.Drawing.Color.Black;
+            this.label15.Location = new System.Drawing.Point(506, 520);
+            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(75, 17);
+            this.label15.TabIndex = 357;
+            this.label15.Text = "Table tag:";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
+            this.label17.ForeColor = System.Drawing.Color.Black;
+            this.label17.Location = new System.Drawing.Point(506, 551);
+            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(127, 17);
+            this.label17.TabIndex = 366;
+            this.label17.Text = "Udi serial correct:";
+            // 
+            // checkBoxUdiSerialCorrectFail
+            // 
+            this.checkBoxUdiSerialCorrectFail.AutoSize = true;
+            this.checkBoxUdiSerialCorrectFail.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.checkBoxUdiSerialCorrectFail.ForeColor = System.Drawing.Color.Black;
+            this.checkBoxUdiSerialCorrectFail.Location = new System.Drawing.Point(816, 552);
+            this.checkBoxUdiSerialCorrectFail.Name = "checkBoxUdiSerialCorrectFail";
+            this.checkBoxUdiSerialCorrectFail.Size = new System.Drawing.Size(52, 17);
+            this.checkBoxUdiSerialCorrectFail.TabIndex = 365;
+            this.checkBoxUdiSerialCorrectFail.Text = "FAIL";
+            this.checkBoxUdiSerialCorrectFail.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxUdiSerialCorrectOK
+            // 
+            this.checkBoxUdiSerialCorrectOK.AutoSize = true;
+            this.checkBoxUdiSerialCorrectOK.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.checkBoxUdiSerialCorrectOK.ForeColor = System.Drawing.Color.Black;
+            this.checkBoxUdiSerialCorrectOK.Location = new System.Drawing.Point(744, 552);
+            this.checkBoxUdiSerialCorrectOK.Name = "checkBoxUdiSerialCorrectOK";
+            this.checkBoxUdiSerialCorrectOK.Size = new System.Drawing.Size(43, 17);
+            this.checkBoxUdiSerialCorrectOK.TabIndex = 364;
+            this.checkBoxUdiSerialCorrectOK.Text = "OK";
+            this.checkBoxUdiSerialCorrectOK.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.Location = new System.Drawing.Point(506, 589);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(69, 17);
+            this.label2.TabIndex = 369;
+            this.label2.Text = "Udi Leds:";
+            // 
+            // checkBoxUdiLedsFail
+            // 
+            this.checkBoxUdiLedsFail.AutoSize = true;
+            this.checkBoxUdiLedsFail.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.checkBoxUdiLedsFail.ForeColor = System.Drawing.Color.Black;
+            this.checkBoxUdiLedsFail.Location = new System.Drawing.Point(816, 589);
+            this.checkBoxUdiLedsFail.Name = "checkBoxUdiLedsFail";
+            this.checkBoxUdiLedsFail.Size = new System.Drawing.Size(52, 17);
+            this.checkBoxUdiLedsFail.TabIndex = 368;
+            this.checkBoxUdiLedsFail.Text = "FAIL";
+            this.checkBoxUdiLedsFail.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxUdiLedsOK
+            // 
+            this.checkBoxUdiLedsOK.AutoSize = true;
+            this.checkBoxUdiLedsOK.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
+            this.checkBoxUdiLedsOK.ForeColor = System.Drawing.Color.Black;
+            this.checkBoxUdiLedsOK.Location = new System.Drawing.Point(744, 589);
+            this.checkBoxUdiLedsOK.Name = "checkBoxUdiLedsOK";
+            this.checkBoxUdiLedsOK.Size = new System.Drawing.Size(43, 17);
+            this.checkBoxUdiLedsOK.TabIndex = 367;
+            this.checkBoxUdiLedsOK.Text = "OK";
+            this.checkBoxUdiLedsOK.UseVisualStyleBackColor = true;
+            // 
             // UdiBoatUnit14Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(934, 843);
+            this.ClientSize = new System.Drawing.Size(934, 899);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.checkBoxUdiLedsFail);
+            this.Controls.Add(this.checkBoxUdiLedsOK);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.checkBoxUdiSerialCorrectFail);
+            this.Controls.Add(this.checkBoxUdiSerialCorrectOK);
+            this.Controls.Add(this.comboBoxTableTag);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.textBoxTestedBy);
             this.Controls.Add(this.textBoxUpdateUDI);
             this.Controls.Add(this.panel1);
@@ -1292,5 +1406,13 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox textBoxUpdateUDI;
         private System.Windows.Forms.ComboBox textBoxTestedBy;
+        private System.Windows.Forms.ComboBox comboBoxTableTag;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.CheckBox checkBoxUdiSerialCorrectFail;
+        private System.Windows.Forms.CheckBox checkBoxUdiSerialCorrectOK;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox checkBoxUdiLedsFail;
+        private System.Windows.Forms.CheckBox checkBoxUdiLedsOK;
     }
 }

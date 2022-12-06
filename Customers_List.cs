@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Configuration;
+using System.Data.SQLite;
+using Dapper;
 
 namespace Project_Product_List
 {
     public partial class Customers_List : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
         RMA_FORM rma_form = null;
 
 
@@ -48,6 +43,10 @@ namespace Project_Product_List
             new Reports().Show();
             this.Hide();
         }
+
+        
+
+
         public void insertCustomerToDataBase()
         {
             if (textBoxCustomerName.Text == "")
@@ -58,25 +57,12 @@ namespace Project_Product_List
             {
                 try
                 {
-                    using (SqlConnection sqlCon = new SqlConnection(connectionString))
+                    using (IDbConnection cnn = new SQLiteConnection(General.LoadConnectionString()))
                     {
-                        sqlCon.Open();
-                        SqlCommand sqlCmd = new SqlCommand("Customers_add", sqlCon);
-                        sqlCmd.CommandType = CommandType.StoredProcedure;
 
-                        sqlCmd.Parameters.AddWithValue("@Customer_name", textBoxCustomerName.Text.Trim());
-                        sqlCmd.Parameters.AddWithValue("@Customer_Phone", textBoxCustomerPhone.Text.Trim());
-                        sqlCmd.Parameters.AddWithValue("@Customer_address", textBoxCustomerAddress.Text.Trim());
-                        sqlCmd.Parameters.AddWithValue("@Customer_rate", comboBoxCustomerRate.Text.Trim());
-                        sqlCmd.Parameters.AddWithValue("@Customer_mail", textBoxCustomerMail.Text.Trim());
+                        cnn.Execute("insert into CUSTOMER (Name, Phone_Number, Mail, Address) values ('" + textBoxCustomerName.Text.Trim() + "', '" + textBoxCustomerPhone.Text.Trim() + "', '" + textBoxCustomerMail.Text.Trim() + "', '" + textBoxCustomerAddress.Text.Trim() + "')");
 
 
-                        sqlCmd.ExecuteNonQuery();
-
-                        if (rma_form != null)
-                        {
-                            rma_form.changeDetailsFromCustomerList(textBoxCustomerName.Text.Trim());
-                        }
                     }
                 }
                 catch (SqlException ex)
@@ -84,8 +70,6 @@ namespace Project_Product_List
 
                     Console.WriteLine(ex.ToString());
                 }
-
-
 
             }
         }
@@ -97,7 +81,7 @@ namespace Project_Product_List
             insertCustomerToDataBase();
             MessageBox.Show("Done Successfully !");
             clearFieldsAfterDone();
-            Load_Customers();
+            UpdateDataGrid();
 
         }
 
@@ -114,68 +98,60 @@ namespace Project_Product_List
 
         }
 
-        void Fill_Customers_in_ComboBox()
+        void Load_Customers_To_ComboBox()
         {
-            try
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                string CustomerName = comboBoxCustomerNameToDelete.Text.Trim();
-
-                cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                try
                 {
-                    comboBoxCustomerNameToDelete.Items.Add(Convert.ToString(reader[0]));
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomerNameToDelete.Items.Add(dr["Name"]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
                 }
-
-                sqlConnection1.Close();
-            }
-            catch (SqlException ex)
-            {
-
-                Console.WriteLine(ex.ToString());
-            }
-
-
-
-        }
-
-        void Load_Customers()
-        {
-
-            try
-            {
-                using (SqlConnection sqlCon = new SqlConnection(connectionString))
+                catch (Exception ex)
                 {
-                    sqlCon.Open();
-                    SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Customers_dt] ; ", sqlCon);
-                    DataTable dtbl = new DataTable();
-                    sqlDa.Fill(dtbl);
-                    dataGridViewCustomers.DataSource = dtbl;
+                    MessageBox.Show(ex.Message);
                 }
             }
-            catch (SqlException ex)
+        }
+
+
+        public void UpdateDataGrid()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
 
-                Console.WriteLine(ex.ToString());
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM CUSTOMER", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridViewCustomers.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
+
+
+
         private void Customers_List_Load(object sender, EventArgs e)
         {
 
 
-            Load_Customers();
-
-            Fill_Customers_in_ComboBox();
+            UpdateDataGrid();
+            Load_Customers_To_ComboBox();
 
 
 
@@ -183,32 +159,39 @@ namespace Project_Product_List
 
         void Delete_Customer_From_DataBase()
         {
-            try
+
+
+
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                string CustomerName = comboBoxCustomerNameToDelete.Text.Trim();
-
-                cmd.CommandText = "DELETE FROM Customers_dt WHERE Customer_name = '" + CustomerName + "';";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                try
                 {
-                    reader.Read();
-                }
+                    
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM CUSTOMER WHERE Name = '" + comboBoxCustomerNameToDelete.Text.Trim() + "';";
+                    cmd.CommandType = CommandType.Text;
 
-                sqlConnection1.Close();
-                MessageBox.Show("Done !");
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine(ex.ToString());
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
         }
@@ -224,7 +207,7 @@ namespace Project_Product_List
                 MessageBox.Show("Delete Successfully !");
 
             }
-            Load_Customers();
+            UpdateDataGrid();
 
 
         }
@@ -236,7 +219,7 @@ namespace Project_Product_List
 
         private void button4_Click(object sender, EventArgs e)
         {
-            Load_Customers();
+            UpdateDataGrid();
         }
 
         public void createExcelFile()
@@ -294,7 +277,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+            pi.FileName = Paths.Paths.MAIN_MENU_HELP_FILE;
             p.StartInfo = pi;
 
             try
@@ -310,6 +293,11 @@ namespace Project_Product_List
         private void excelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             createExcelFile();
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }

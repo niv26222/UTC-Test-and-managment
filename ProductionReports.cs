@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Dapper;
 
 namespace Project_Product_List
 {
@@ -13,12 +16,7 @@ namespace Project_Product_List
 
     public partial class ProductionReports : Form
     {
-
-        static string ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-
-        SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
         
-
         int A = 9;
         int B = 232;
         int textBoxCounter = 2;
@@ -36,9 +34,9 @@ namespace Project_Product_List
         }
 
 
-        public System.Windows.Forms.TextBox addNewTextBox()
+        public TextBox addNewTextBox()
         {
-            System.Windows.Forms.TextBox txt = new System.Windows.Forms.TextBox();
+            TextBox txt = new TextBox();
 
             this.Controls.Add(txt);
             txt.Width = 114;
@@ -59,37 +57,34 @@ namespace Project_Product_List
         void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
-            try
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                //string CustomerName = comboBoxCustomerName.Text.Trim();
-
-                cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                try
                 {
-                    comboBoxCustomer.Items.Add(Convert.ToString(reader[0]));
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomer.Items.Add(dr["Name"]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
 
-                sqlConnection1.Close();
             }
-
-            catch (SqlException ex)
-            {
-
-                Console.WriteLine(ex.ToString());
-            }
-
         }
-
 
         private Point newPoint(int v1, int v2)
         {
@@ -98,7 +93,7 @@ namespace Project_Product_List
 
         private void PictureBox3_Click(object sender, EventArgs e)
         {
-            new Reports().Show();
+            new Form2().Show();
             this.Hide();
         }
         private string MyDirectory()
@@ -113,7 +108,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Production Reports.docx";
+            pi.FileName = @"P:\Archive\HELP UTC TESTS\Production Reports.docx";
             p.StartInfo = pi;
 
             try
@@ -133,17 +128,7 @@ namespace Project_Product_List
         }
 
         private void PictureBoxDone_Click(object sender, EventArgs e)
-        {
-
-            // Test the Date formats !
-
-            //MessageBox.Show(dateTimePickerInvoiceDate.ToString());
-            //dateTimePickerInvoiceDate.Format = DateTimePickerFormat.Custom;
-            //dateTimePickerInvoiceDate.CustomFormat = "dd/MM/yyyy";
-            //MessageBox.Show(dateTimePickerInvoiceDate.ToString());
-
-            //
-            
+        {         
             if (textBoxSN.Text == "")
             {
                 MessageBox.Show(" Serial Number must be writed ! ");
@@ -152,10 +137,9 @@ namespace Project_Product_List
             {
                 try
                 {
-                    Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                    Delete_Previous_Data_From_DataBase();
-                    insertToTemporaryDataBase();
-                    insertToDataBase();
+                    //Delete_Previous_Data_From_DataBase();
+                    General.ActOnDb("DELETE", "", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), null);
+                    InsertToDataBase();
                     MessageBox.Show("Successfully inserted into database");
                     clearFieldsAfterDone();
                 }
@@ -188,80 +172,18 @@ namespace Project_Product_List
             }
         }
 
-        public void insertToDataBase()
+        public void InsertToDataBase()
         {
+
             try
             {
-                using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
+                using (IDbConnection cnn = new SQLiteConnection(General.LoadConnectionString()))
                 {
-
-
-
-
-                    sqlCon.Open();
-                    SqlCommand sqlCmd = new SqlCommand("ProductionReports_add", sqlCon);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
-
-                    sqlCmd.Parameters.AddWithValue("@Serial_Number", textBoxSN.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TypeOfUDI", comboBoxType.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Customer_name", comboBoxCustomer.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Customer_location", textBoxLocation.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Sell_or_Rent", comboBoxSell_Rent.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@RMA_Number_1", textBoxRMA1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@RMA_Number_2", textBoxRMA2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@RMA_Number_3", textBoxRMA3.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@Invoice_Date", dateTimePickerInvoiceDate.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Shipment_Date", dateTimePickerShipmentDate.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Courier", comboBoxCourier.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Waybill", textBoxWaybill.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Comment", textBoxComment.Text.Trim());
-
-                    sqlCmd.ExecuteNonQuery();
-                    sqlCon.Close();
+                    cnn.Execute("insert into PRODUCTION_REPORT(Serial_Number, TypeOfUDI, Customer_name, Customer_location, Sell_or_Rent, RMA_Number_1, RMA_Number_2, RMA_Number_3, Invoice_Date, Shipment_Date, Courier, Waybill, Comment) values ('" + textBoxSN.Text.Trim() + "','" + comboBoxType.Text.Trim() + "','" + comboBoxCustomer.Text.Trim() + "','" + textBoxLocation.Text.Trim() + "','" + comboBoxSell_Rent.Text.Trim() + "','" + textBoxRMA1.Text.Trim() + "','" + textBoxRMA2.Text.Trim() + "','" + textBoxRMA3.Text.Trim() + "','" + dateTimePickerInvoiceDate.Text.Trim() + "','" + dateTimePickerShipmentDate.Text.Trim() + "','" + comboBoxCourier.Text.Trim() + "','" + textBoxWaybill.Text.Trim() + "','" + textBoxComment.Text.Trim() + "')");
                 }
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show(ex.ToString());
-                Console.WriteLine(ex.ToString());
-            }
-        }
 
+                MessageBox.Show("Done Successfully !");
 
-        public void insertToTemporaryDataBase()
-        {
-            try
-            {
-                using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
-                {
-                    sqlCon.Open();
-                    SqlCommand sqlCmd = new SqlCommand("ProductionReports_Temporary_add", sqlCon);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
-
-                    sqlCmd.Parameters.AddWithValue("@Serial_Number", textBoxSN.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TypeOfUDI", comboBoxType.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Customer_name", comboBoxCustomer.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Customer_location", textBoxLocation.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Sell_or_Rent", comboBoxSell_Rent.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@RMA_Number_1", textBoxRMA1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@RMA_Number_2", textBoxRMA2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@RMA_Number_3", textBoxRMA3.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@Invoice_Date", dateTimePickerInvoiceDate.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Shipment_Date", dateTimePickerShipmentDate.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Courier", comboBoxCourier.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Waybill", textBoxWaybill.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Comment", textBoxComment.Text.Trim());
-
-
-                    sqlCmd.ExecuteNonQuery();
-
-                    sqlCon.Close();
-
-                }
             }
             catch (SqlException ex)
             {
@@ -273,49 +195,40 @@ namespace Project_Product_List
 
 
 
-        public void Delete_Previous_Data_From_DataBaseTEMPORARY_dt()
-        {
-            SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string SN = textBoxSN.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM ProductionReports_Temporary_dt WHERE Serial_Number = '" + SN + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
-            {
-                reader.Read();
-            }
-
-            sqlConnection1.Close();
-        }
         public void Delete_Previous_Data_From_DataBase()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
             string SN = textBoxSN.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM ProductionReports_dt WHERE Serial_Number = '" + SN + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
-            }
+                try
+                {
 
-            sqlConnection1.Close();
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM PRODUCTION_REPORT WHERE Serial_Number = '" + SN + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
 
@@ -327,8 +240,8 @@ namespace Project_Product_List
             }
             else
             {
-                Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                insertToTemporaryDataBase();
+                Delete_Previous_Data_From_DataBase();
+                InsertToDataBase();
                 clearFieldsAfterDone();
             }
 
@@ -336,287 +249,28 @@ namespace Project_Product_List
 
 
 
-        public void restoreTypeOfUDI()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TypeOfUDI FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                comboBoxType.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreCustomerName()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Customer_name FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                comboBoxCustomer.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreCustomerLocation()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Customer_location FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxLocation.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreSellOrRent()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Sell_or_Rent FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                comboBoxSell_Rent.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-
-        public void restoreRMA_NUMBER1()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT RMA_NUMBER_1 FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxRMA1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreRMA_NUMBER2()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT RMA_NUMBER_2 FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxRMA2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreRMA_NUMBER3()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT RMA_NUMBER_3 FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxRMA3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-
-        public void restoreInvoiceDate()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Invoice_Date FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                dateTimePickerInvoiceDate.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreShipmentDate()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Shipment_Date FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                dateTimePickerShipmentDate.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreCourier()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Courier FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                comboBoxCourier.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorewaybill()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Waybill FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxWaybill.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreComment()
-        {
-            string SN = textBoxSN.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Comment FROM [ProductionReports_Temporary_dt] WHERE Serial_Number = '" + SN + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxComment.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void Restore_data_from_temporary_data_base()
-        {
-            restoreTypeOfUDI();
-            restoreCustomerName();
-            restoreCustomerLocation();
-            restoreSellOrRent();
-            restoreRMA_NUMBER1();
-            restoreRMA_NUMBER2();
-            restoreRMA_NUMBER3();
-            restoreInvoiceDate();
-            restoreShipmentDate();
-            restoreCourier();
-            restorewaybill();
-            restoreComment();
-        }
-
         private void PictureBoxRestore_Click(object sender, EventArgs e)
         {
             try
             {
-                Restore_data_from_temporary_data_base();
-
+                General.ActOnDb("SELECT", "TypeOfUDI", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), comboBoxType);
+                General.ActOnDb("SELECT", "Customer_name", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), comboBoxCustomer);
+                General.ActOnDb("SELECT", "Customer_location", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), textBoxLocation);
+                General.ActOnDb("SELECT", "Sell_or_Rent", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), comboBoxSell_Rent);
+                General.ActOnDb("SELECT", "RMA_Number_1", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), textBoxRMA1);
+                General.ActOnDb("SELECT", "RMA_Number_2", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), textBoxRMA2);
+                General.ActOnDb("SELECT", "RMA_Number_3", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), textBoxRMA3);
+                General.ActOnDb("SELECT", "Invoice_Date", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), dateTimePickerInvoiceDate);
+                General.ActOnDb("SELECT", "Shipment_Date", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), dateTimePickerShipmentDate);
+                General.ActOnDb("SELECT", "Courier", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), comboBoxCourier);
+                General.ActOnDb("SELECT", "Waybill", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), textBoxWaybill);
+                General.ActOnDb("SELECT", "Comment", "PRODUCTION_REPORT", "Serial_Number", textBoxSN.Text.Trim(), textBoxComment);  
             }
             catch (SqlException Ex)
             {
                 MessageBox.Show(Ex.Message);
             }
+
         }
 
         private void DoneToolStripMenuItem_Click(object sender, EventArgs e)
@@ -629,10 +283,8 @@ namespace Project_Product_List
             {
                 try
                 {
-                    Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
                     Delete_Previous_Data_From_DataBase();
-                    insertToTemporaryDataBase();
-                    insertToDataBase();
+                    InsertToDataBase();
                     MessageBox.Show("Successfully inserted into database");
                     clearFieldsAfterDone();
                 }
@@ -652,8 +304,8 @@ namespace Project_Product_List
             }
             else
             {
-                Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                insertToTemporaryDataBase();
+                Delete_Previous_Data_From_DataBase();
+                InsertToDataBase();
                 clearFieldsAfterDone();
             }
         }
@@ -667,29 +319,39 @@ namespace Project_Product_List
         void fill_Address()
         {
 
-            ///////////////////////// fill Customer Address /////////////////////////
-
-            SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string CustomerName = comboBoxCustomer.Text.Trim();
 
-            cmd.CommandText = "SELECT Customer_address FROM Customers_dt WHERE Customer_name = '" + CustomerName + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxLocation.Text = Convert.ToString(reader[0]);
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Address FROM CUSTOMER WHERE Name = '" + CustomerName + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxLocation.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
-            
         }
     }
 }

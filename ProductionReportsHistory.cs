@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SQLite;
 using System.Windows.Forms;
 
 namespace Project_Product_List
 {
     public partial class ProductionReportsHistory : Form
     {
-        static string ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+        static string ConnectionString = Paths.Paths.UTC_SQL_CONNECTION_NEW;
         SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
 
         public ProductionReportsHistory()
@@ -23,7 +19,7 @@ namespace Project_Product_List
 
         private void PictureBoxBack_Click(object sender, EventArgs e)
         {
-            new ProductionReports().Show();
+            new Reports().Show();
             this.Hide();
         }
 
@@ -81,52 +77,52 @@ namespace Project_Product_List
         void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
-            try
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                //string CustomerName = comboBoxCustomerName.Text.Trim();
-
-                cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                try
                 {
-                    comboBoxCustomer.Items.Add(Convert.ToString(reader[0]));
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomer.Items.Add(dr["Name"]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
 
-                sqlConnection1.Close();
             }
-
-            catch (SqlException ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-
         }
-
 
         private void ProductionReportsHistory_Load(object sender, EventArgs e)
         {
             Load_Customers_To_ComboBox();
-            fillDataGrid();
+            UpdateDataGrid();
         }
 
-        public void fillDataGrid()
+        public void UpdateDataGrid()
         {
-            using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ProductionReports_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM PRODUCTION_REPORT", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
@@ -134,17 +130,18 @@ namespace Project_Product_List
         {
             string SN = textBoxSN.Text.Trim();
 
-
-
-            using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
+            
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ProductionReports_dt] where Serial_Number LIKE '%" + SN + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM PRODUCTION_REPORT WHERE Serial_Number LIKE '%" + SN + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
         }
 
 
@@ -152,15 +149,37 @@ namespace Project_Product_List
         private void comboBoxCustomer_SelectedIndexChanged(object sender, EventArgs e)
         {
             string CN = comboBoxCustomer.Text.Trim();
+            
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ProductionReports_dt] where Customer_name LIKE '%" + CN + "';", sqlCon);
+                try
+                {
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT * FROM PRODUCTION_REPORT WHERE Customer_name LIKE '%" + CN + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
     }

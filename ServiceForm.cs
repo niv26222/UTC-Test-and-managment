@@ -1,28 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Reflection;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SQLite;
+using Dapper;
+using Image = iTextSharp.text.Image;
 
 namespace Project_Product_List
 {
-    
+
     public partial class ServiceForm : Form
     {
-        string ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+
+        public List<string> imagesPath = new List<string>();
+        string SavePath = Paths.Paths.SERVICE_FORM_PATH;
 
         void clearFieldsAfterDone()
         {
@@ -44,88 +43,104 @@ namespace Project_Product_List
             }
         }
 
-        public void LOAD_Customers_TO_ComboBox()
+        void Load_Customers_To_ComboBox()
         {
-            /////load the names to combobox.
-            try
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                string CustomerName = comboBoxSoldTo.Text.Trim();
-
-                cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                try
                 {
-                    comboBoxSoldTo.Items.Add(Convert.ToString(reader[0]));
-                }
-                sqlConnection1.Close();
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxSoldTo.Items.Add(dr["Name"]);
+                    }
 
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
         public void LOAD_RMA_NUMBERS_TO_COMBO_BOX()
         {
             /////load the names to combobox
 
-            try
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-
-
-                cmd.CommandText = "SELECT RMA_Number FROM[RMA_dt] WHERE deviceBeenFixed = '" + 0 + "'; ";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                try
                 {
-                    comboBoxRMA_NUMBER.Items.Add(Convert.ToString(reader[0]));
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT RMA_Number FROM RMA WHERE deviceBeenFixed = '" + 0 + "'; ";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxRMA_NUMBER.Items.Add(dr["RMA_Number"]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
                 }
-
-                sqlConnection1.Close();
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            catch (SqlException ex)
-            {
 
-                Console.WriteLine(ex.ToString());
-            }
         }
 
         public void LOAD_RMA_DATE_TO_DATE_TIME_PICKER_INVOICE_DATE()
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DateCreate FROM [RMA_dt] WHERE RMA_Number = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                dateTimePickerINVOICE_DATE.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT DateCreate FROM RMA WHERE RMA_Number = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        dateTimePickerINVOICE_DATE.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
@@ -134,41 +149,72 @@ namespace Project_Product_List
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SERVICE_DATE FROM [ServiceForm_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                dateTimePickerSERVICE_DATE.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SERVICE_DATE FROM SERVICE_FORM WHERE RMA = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        dateTimePickerSERVICE_DATE.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
-
+        
 
         public void LOAD_PRODUCT_TO_TEXT_BOX()
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Description1 FROM [RMA_dt] WHERE RMA_Number = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxMODEL.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Description1 FROM RMA WHERE RMA_Number = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxMODEL.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
@@ -176,18 +222,35 @@ namespace Project_Product_List
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SerialNumber1 FROM [RMA_dt] WHERE RMA_Number = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxSerial.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SerialNumber1 FROM RMA WHERE RMA_Number = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxSerial.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
@@ -195,2339 +258,127 @@ namespace Project_Product_List
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Customer_Name FROM [RMA_dt] WHERE RMA_Number = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxSoldTo.Text = Convert.ToString(rd[0]);
-            }
-
-        }
-
-        public void Save_into_temporary_dataBase()
-        {
-
-            try
-            {
-                using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
+                try
                 {
-                    sqlCon.Open();
-                    SqlCommand sqlCmd = new SqlCommand("ServiceForm_TEMPORARY_add", sqlCon);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Customer_Name FROM RMA WHERE RMA_Number = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
 
 
+                    string customer_address = cmd.CommandText.ToString();
 
-                    sqlCmd.Parameters.AddWithValue("@SOLD_TO", comboBoxSoldTo.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@SERVICE_AT", comboBoxSERVICED_AT.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@RMA", comboBoxRMA_NUMBER.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MODEL", textBoxMODEL.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@SERIAL", textBoxSerial.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@INVOICE_DATE", dateTimePickerINVOICE_DATE.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@SERVICE_DATE", dateTimePickerSERVICE_DATE.Text.Trim());
+                    while (dr.Read())
+                    {
+                        comboBoxSoldTo.Text = Convert.ToString(dr[0]);
+                    }
 
+                    dr.Close();
+                    conn.Close();
 
-                    sqlCmd.Parameters.AddWithValue("@QTY_1", textBoxQTY_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_1", textBoxDESCRIPTION_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_1", textBoxPRICE_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_1", textBoxPartUsedAMOUNT_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_1", textBoxMAN_PAN_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_1", textBoxPART_REFERENCE_1.Text.Trim());
-
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_2", textBoxQTY_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_2", textBoxDESCRIPTION_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_2", textBoxPRICE_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_2", textBoxPartUsedAMOUNT_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_2", textBoxMAN_PAN_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_2", textBoxPART_REFERENCE_2.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_3", textBoxQTY_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_3", textBoxDESCRIPTION_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_3", textBoxPRICE_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_3", textBoxPartUsedAMOUNT_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_3", textBoxMAN_PAN_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_3", textBoxPART_REFERENCE_3.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_4", textBoxQTY_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_4", textBoxDESCRIPTION_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_4", textBoxPRICE_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_4", textBoxPartUsedAMOUNT_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_4", textBoxMAN_PAN_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_4", textBoxPART_REFERENCE_4.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_5", textBoxQTY_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_5", textBoxDESCRIPTION_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_5", textBoxPRICE_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_5", textBoxPartUsedAMOUNT_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_5", textBoxMAN_PAN_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_5", textBoxPART_REFERENCE_5.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_6", textBoxQTY_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_6", textBoxDESCRIPTION_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_6", textBoxPRICE_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_6", textBoxPartUsedAMOUNT_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_6", textBoxMAN_PAN_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_6", textBoxPART_REFERENCE_6.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_7", textBoxQTY_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_7", textBoxDESCRIPTION_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_7", textBoxPRICE_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_7", textBoxPartUsedAMOUNT_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_7", textBoxMAN_PAN_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_7", textBoxPART_REFERENCE_7.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_8", textBoxQTY_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_8", textBoxDESCRIPTION_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_8", textBoxPRICE_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_8", textBoxPartUsedAMOUNT_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_8", textBoxMAN_PAN_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_8", textBoxPART_REFERENCE_8.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_9", textBoxQTY_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_9", textBoxDESCRIPTION_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_9", textBoxPRICE_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_9", textBoxPartUsedAMOUNT_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_9", textBoxMAN_PAN_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_9", textBoxPART_REFERENCE_9.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_10", textBoxQTY_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_10", textBoxDESCRIPTION_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_10", textBoxPRICE_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_10", textBoxPartUsedAMOUNT_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_10", textBoxMAN_PAN_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_10", textBoxPART_REFERENCE_10.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_11", textBoxQTY_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_11", textBoxDESCRIPTION_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_11", textBoxPRICE_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_11", textBoxPartUsedAMOUNT_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_11", textBoxMAN_PAN_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_11", textBoxPART_REFERENCE_11.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_12", textBoxQTY_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_12", textBoxDESCRIPTION_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_12", textBoxPRICE_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_12", textBoxPartUsedAMOUNT_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_12", textBoxMAN_PAN_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_12", textBoxPART_REFERENCE_12.Text.Trim());
-
-
-                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-                    sqlCmd.Parameters.AddWithValue("@TOTAL_PRICE", textBoxTOTAL_PRICE.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_1", textBoxSERVICE_PERSON_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_DATE_1", dateTimePickerDATE_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_HOURS_1", textBoxHOURS_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_RATES_1", textBoxRATES_1.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_2", textBoxSERVICE_PERSON_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_DATE_2", dateTimePickerDATE_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_HOURS_2", textBoxHOURS_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_RATES_2", textBoxRATES_2.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_3", textBoxSERVICE_PERSON_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_DATE_3", dateTimePickerDATE_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_HOURS_3", textBoxHOURS_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_RATES_3", textBoxRATES_3.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@COMMENTS", textBoxCOMMENTS.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@SERVICE_SUPERVISED_BY", textBoxSERVICE_SUPERVISED_BY.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@SIGNED", textBoxSIGNED.Text.Trim());
-
-                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    sqlCmd.ExecuteNonQuery();
-                    sqlCon.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
             }
-            catch (SqlException ex)
-            {
-
-                Console.WriteLine(ex.ToString());
-            }
-
 
         }
 
-        public void Delete_Previous_Data_From_DataBaseTEMPORARY_dt()
+        public void Delete_Previous_Data_From_DataBase()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+
             string RMA = comboBoxRMA_NUMBER.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM ServiceForm_TEMPORARY_dt WHERE RMA = '" + RMA + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM SERVICE_FORM WHERE RMA = '" + RMA + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-
-            sqlConnection1.Close();
         }
-
 
         public void restoreServiceFormData(string dataBaseName, TextBox textboxName, string dataBaseTableName)
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT  " + dataBaseName + " FROM " + dataBaseTableName + " WHERE RMA = '" + RMA_NUMBER + "';";//" + dataBaseTableName + "
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textboxName.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT  " + dataBaseName + " FROM " + dataBaseTableName + " WHERE RMA = '" + RMA_NUMBER + "';";//" + dataBaseTableName + "
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textboxName.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
         }
 
-        public void restoreMODEL()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
+ 
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MODEL FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
 
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMODEL.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreSERIAL()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SERIAL FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxSerial.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
         
-        public void restoreQTY_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_4()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_4 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_4.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_4()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_4 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_4.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_4()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_4 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_4.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_4()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_4 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_4.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN4()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_4 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_4.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_4()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_4 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_4.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_5()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_5 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_5.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_5()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_5 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_5.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_5()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_5 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_5.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_5()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_5 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_5.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN5()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_5 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_5.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_5()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_5 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_5.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_6()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_6 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_6.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_6()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_6 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_6.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_6()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_6 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_6.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_6()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_6 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_6.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN6()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_6 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_6.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_6()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_6 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_6.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_7()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_7 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_7.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_7()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_7 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_7.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_7()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_7 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_7.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_7()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_7 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_7.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN7()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_7 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_7.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_7()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_7 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_7.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_8()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_8 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_8.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_8()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_8 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_8.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_8()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_8 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_8.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_8()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_8 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_8.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN8()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_8 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_8.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_8()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_8 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_8.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_9()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_9 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_9.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_9()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_9 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_9.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_9()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_9 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_9.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_9()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_9 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_9.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN9()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_9 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_9.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_9()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_9 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_9.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_10()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_10 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_10.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_10()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_10 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_10.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_10()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_10 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_10.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_10()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_10 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_10.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN10()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_10 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_10.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_10()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_10 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_10.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_11()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_11 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_11.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_11()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_11 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_11.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_11()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_11 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_11.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_11()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_11 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_11.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN11()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_11 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_11.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_11()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_11 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_11.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-        public void restoreQTY_12()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT QTY_12 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxQTY_12.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreDESCRIPTION_12()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DESCRIPTION_12 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxDESCRIPTION_12.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePRICE_12()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PRICE_12 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPRICE_12.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreAMOUNT_12()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AMOUNT_12 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPartUsedAMOUNT_12.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreMAN_PN12()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT MAN_PN_12 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxMAN_PAN_12.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restorePART_REFERENCE_12()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT PART_REFERENCE_12 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxPART_REFERENCE_12.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-        //
-
-
-        public void restoreTECHNICIAN_PERSON_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxSERVICE_PERSON_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }//
-
-        public void restoreTECHNICIAN_PERSON_DATE_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_DATE_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                dateTimePickerDATE_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-
-        public void restoreServiceDate1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SERVICE_DATE FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                dateTimePickerSERVICE_DATE.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreInvoiceDate1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT INVOICE_DATE FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                dateTimePickerINVOICE_DATE.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-
-        public void restoreSoldTo()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SOLD_TO FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                comboBoxSoldTo.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-
-        public void restorFromLoad_SoldTo()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SOLD_TO FROM [ServiceForm_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                comboBoxSoldTo.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-
-        public void restoreTECHNICIAN_PERSON_HOURS_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_HOURS_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxHOURS_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_RATES_1()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_RATES_1 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxRATES_1.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxSERVICE_PERSON_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_DATE_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_DATE_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                dateTimePickerDATE_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_HOURS_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_HOURS_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxHOURS_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_RATES_2()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_RATES_2 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxRATES_2.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_3()/////////////////////////////////////////////////////////////
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxSERVICE_PERSON_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_DATE_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_DATE_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                dateTimePickerDATE_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_HOURS_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_HOURS_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxHOURS_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTECHNICIAN_PERSON_RATES_3()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TECHNICIAN_PERSON_RATES_3 FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxRATES_3.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreCOMMENTS()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT COMMENTS FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxCOMMENTS.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreSERVICE_SUPERVISED_BY()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SERVICE_SUPERVISED_BY FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxSERVICE_SUPERVISED_BY.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreSIGNED()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SIGNED FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxSIGNED.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
-
-        public void restoreTOTAL_PRICE()
-        {
-            string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT TOTAL_PRICE FROM [ServiceForm_TEMPORARY_dt] WHERE RMA = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
-            {
-                textBoxTOTAL_PRICE.Text = rd[0].ToString();
-            }
-            con.Close();
-        }
 
         public void Done_and_Save_into_dataBase()
         {
-
-
             try
             {
-                using (SqlConnection sqlCon = new SqlConnection(ConnectionString))
+                using (IDbConnection cnn = new SQLiteConnection(General.LoadConnectionString()))
                 {
-                    sqlCon.Open();
-                    SqlCommand sqlCmd = new SqlCommand("ServiceForm_add", sqlCon);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
-
-
-                    sqlCmd.Parameters.AddWithValue("@SOLD_TO", comboBoxSoldTo.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@SERVICE_AT", comboBoxSERVICED_AT.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@RMA", comboBoxRMA_NUMBER.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MODEL", textBoxMODEL.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@SERIAL", textBoxSerial.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@INVOICE_DATE", dateTimePickerINVOICE_DATE.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@SERVICE_DATE", dateTimePickerSERVICE_DATE.Text.Trim());
-
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_1", textBoxQTY_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_1", textBoxDESCRIPTION_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_1", textBoxPRICE_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_1", textBoxPartUsedAMOUNT_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_1", textBoxMAN_PAN_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_1", textBoxPART_REFERENCE_1.Text.Trim());
-
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_2", textBoxQTY_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_2", textBoxDESCRIPTION_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_2", textBoxPRICE_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_2", textBoxPartUsedAMOUNT_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_2", textBoxMAN_PAN_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_2", textBoxPART_REFERENCE_2.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_3", textBoxQTY_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_3", textBoxDESCRIPTION_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_3", textBoxPRICE_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_3", textBoxPartUsedAMOUNT_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_3", textBoxMAN_PAN_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_3", textBoxPART_REFERENCE_3.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_4", textBoxQTY_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_4", textBoxDESCRIPTION_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_4", textBoxPRICE_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_4", textBoxPartUsedAMOUNT_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_4", textBoxMAN_PAN_4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_4", textBoxPART_REFERENCE_4.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_5", textBoxQTY_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_5", textBoxDESCRIPTION_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_5", textBoxPRICE_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_5", textBoxPartUsedAMOUNT_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_5", textBoxMAN_PAN_5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_5", textBoxPART_REFERENCE_5.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_6", textBoxQTY_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_6", textBoxDESCRIPTION_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_6", textBoxPRICE_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_6", textBoxPartUsedAMOUNT_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_6", textBoxMAN_PAN_6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_6", textBoxPART_REFERENCE_6.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_7", textBoxQTY_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_7", textBoxDESCRIPTION_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_7", textBoxPRICE_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_7", textBoxPartUsedAMOUNT_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_7", textBoxMAN_PAN_7.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_7", textBoxPART_REFERENCE_7.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_8", textBoxQTY_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_8", textBoxDESCRIPTION_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_8", textBoxPRICE_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_8", textBoxPartUsedAMOUNT_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_8", textBoxMAN_PAN_8.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_8", textBoxPART_REFERENCE_8.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_9", textBoxQTY_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_9", textBoxDESCRIPTION_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_9", textBoxPRICE_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_9", textBoxPartUsedAMOUNT_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_9", textBoxMAN_PAN_9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_9", textBoxPART_REFERENCE_9.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_10", textBoxQTY_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_10", textBoxDESCRIPTION_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_10", textBoxPRICE_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_10", textBoxPartUsedAMOUNT_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_10", textBoxMAN_PAN_10.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_10", textBoxPART_REFERENCE_10.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_11", textBoxQTY_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_11", textBoxDESCRIPTION_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_11", textBoxPRICE_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_11", textBoxPartUsedAMOUNT_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_11", textBoxMAN_PAN_11.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_11", textBoxPART_REFERENCE_11.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@QTY_12", textBoxQTY_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DESCRIPTION_12", textBoxDESCRIPTION_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PRICE_12", textBoxPRICE_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@AMOUNT_12", textBoxPartUsedAMOUNT_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@MAN_PN_12", textBoxMAN_PAN_12.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@PART_REFERENCE_12", textBoxPART_REFERENCE_12.Text.Trim());
-
-
-                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-                    sqlCmd.Parameters.AddWithValue("@TOTAL_PRICE", textBoxTOTAL_PRICE.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_1", textBoxSERVICE_PERSON_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_DATE_1", dateTimePickerDATE_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_HOURS_1", textBoxHOURS_1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_RATES_1", textBoxRATES_1.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_2", textBoxSERVICE_PERSON_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_DATE_2", dateTimePickerDATE_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_HOURS_2", textBoxHOURS_2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_RATES_2", textBoxRATES_2.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_3", textBoxSERVICE_PERSON_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_DATE_3", dateTimePickerDATE_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_HOURS_3", textBoxHOURS_3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TECHNICIAN_PERSON_RATES_3", textBoxRATES_3.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@COMMENTS", textBoxCOMMENTS.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@SERVICE_SUPERVISED_BY", textBoxSERVICE_SUPERVISED_BY.Text.Trim());
-
-                    sqlCmd.Parameters.AddWithValue("@SIGNED", textBoxSIGNED.Text.Trim());
-
-                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    sqlCmd.ExecuteNonQuery();
-                    sqlCon.Close(); ///////////
-                    MessageBox.Show(" Done successfully !");
-
+                    cnn.Execute("insert into SERVICE_FORM (SOLD_TO, SERVICE_AT, RMA, MODEL, SERIAL, INVOICE_DATE, SERVICE_DATE, QTY_1, DESCRIPTION_1, PRICE_1, AMOUNT_1, MAN_PN_1, PART_REFERENCE_1, QTY_2, DESCRIPTION_2, PRICE_2, AMOUNT_2, MAN_PN_2, PART_REFERENCE_2, QTY_3, DESCRIPTION_3, PRICE_3, AMOUNT_3, MAN_PN_3, PART_REFERENCE_3, QTY_4, DESCRIPTION_4, PRICE_4, AMOUNT_4, MAN_PN_4, PART_REFERENCE_4, QTY_5, DESCRIPTION_5, PRICE_5, AMOUNT_5, MAN_PN_5, PART_REFERENCE_5, QTY_6, DESCRIPTION_6, PRICE_6, AMOUNT_6, MAN_PN_6, PART_REFERENCE_6, QTY_7, DESCRIPTION_7, PRICE_7, AMOUNT_7, MAN_PN_7, PART_REFERENCE_7, QTY_8, DESCRIPTION_8, PRICE_8, AMOUNT_8, MAN_PN_8, PART_REFERENCE_8, QTY_9, DESCRIPTION_9, PRICE_9, AMOUNT_9, MAN_PN_9, PART_REFERENCE_9, QTY_10, DESCRIPTION_10, PRICE_10, AMOUNT_10, MAN_PN_10, PART_REFERENCE_10, QTY_11, DESCRIPTION_11, PRICE_11, AMOUNT_11, MAN_PN_11, PART_REFERENCE_11, QTY_12, DESCRIPTION_12, PRICE_12, AMOUNT_12, MAN_PN_12, PART_REFERENCE_12, TOTAL_PRICE, TECHNICIAN_PERSON_1, TECHNICIAN_PERSON_DATE_1, TECHNICIAN_PERSON_HOURS_1, TECHNICIAN_PERSON_RATES_1, TECHNICIAN_PERSON_2, TECHNICIAN_PERSON_DATE_2, TECHNICIAN_PERSON_HOURS_2, TECHNICIAN_PERSON_RATES_2, TECHNICIAN_PERSON_3, TECHNICIAN_PERSON_DATE_3, TECHNICIAN_PERSON_HOURS_3, TECHNICIAN_PERSON_RATES_3, COMMENTS, SERVICE_SUPERVISED_BY, SIGNED, REASON1, REASON2, REASON3, REASON4, REASON5, REASON6, REASON7, REASON8, REASON9, REASON10, REASON11, REASON12 ) values ('" + comboBoxSoldTo.Text.Trim() + "', '" + comboBoxSERVICED_AT.Text.Trim() + "', '" + comboBoxRMA_NUMBER.Text.Trim() + "', '" + textBoxMODEL.Text.Trim() + "', '" + textBoxSerial.Text.Trim() + "', '" + dateTimePickerINVOICE_DATE.Text.Trim() + "', '" + dateTimePickerSERVICE_DATE.Text.Trim() + "', '" + textBoxQTY_1.Text.Trim() + "', '" + textBoxDESCRIPTION_1.Text.Trim() + "', '" + textBoxPRICE_1.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_1.Text.Trim() + "', '" + textBoxMAN_PAN_1.Text.Trim() + "', '" + textBoxPART_REFERENCE_1.Text.Trim() + "', '" + textBoxQTY_2.Text.Trim() + "', '" + textBoxDESCRIPTION_2.Text.Trim() + "', '" + textBoxPRICE_2.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_2.Text.Trim() + "', '" + textBoxMAN_PAN_2.Text.Trim() + "', '" + textBoxPART_REFERENCE_2.Text.Trim() + "', '" + textBoxQTY_3.Text.Trim() + "', '" + textBoxDESCRIPTION_3.Text.Trim() + "', '" + textBoxPRICE_3.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_3.Text.Trim() + "', '" + textBoxMAN_PAN_3.Text.Trim() + "', '" + textBoxPART_REFERENCE_3.Text.Trim() + "', '" + textBoxQTY_4.Text.Trim() + "', '" + textBoxDESCRIPTION_4.Text.Trim() + "', '" + textBoxPRICE_4.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_4.Text.Trim() + "', '" + textBoxMAN_PAN_4.Text.Trim() + "', '" + textBoxPART_REFERENCE_4.Text.Trim() + "', '" + textBoxQTY_5.Text.Trim() + "', '" + textBoxDESCRIPTION_5.Text.Trim() + "', '" + textBoxPRICE_5.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_5.Text.Trim() + "', '" + textBoxMAN_PAN_5.Text.Trim() + "', '" + textBoxPART_REFERENCE_5.Text.Trim() + "', '" + textBoxQTY_6.Text.Trim() + "', '" + textBoxDESCRIPTION_6.Text.Trim() + "', '" + textBoxPRICE_6.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_6.Text.Trim() + "', '" + textBoxMAN_PAN_6.Text.Trim() + "', '" + textBoxPART_REFERENCE_6.Text.Trim() + "', '" + textBoxQTY_7.Text.Trim() + "', '" + textBoxDESCRIPTION_7.Text.Trim() + "', '" + textBoxPRICE_7.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_7.Text.Trim() + "', '" + textBoxMAN_PAN_7.Text.Trim() + "', '" + textBoxPART_REFERENCE_7.Text.Trim() + "', '" + textBoxQTY_8.Text.Trim() + "', '" + textBoxDESCRIPTION_8.Text.Trim() + "', '" + textBoxPRICE_8.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_8.Text.Trim() + "', '" + textBoxMAN_PAN_8.Text.Trim() + "', '" + textBoxPART_REFERENCE_8.Text.Trim() + "', '" + textBoxQTY_9.Text.Trim() + "', '" + textBoxDESCRIPTION_9.Text.Trim() + "', '" + textBoxPRICE_9.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_9.Text.Trim() + "', '" + textBoxMAN_PAN_9.Text.Trim() + "', '" + textBoxPART_REFERENCE_9.Text.Trim() + "', '" + textBoxQTY_10.Text.Trim() + "', '" + textBoxDESCRIPTION_10.Text.Trim() + "', '" + textBoxPRICE_10.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_10.Text.Trim() + "', '" + textBoxMAN_PAN_10.Text.Trim() + "', '" + textBoxPART_REFERENCE_10.Text.Trim() + "', '" + textBoxQTY_11.Text.Trim() + "', '" + textBoxDESCRIPTION_11.Text.Trim() + "', '" + textBoxPRICE_11.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_11.Text.Trim() + "', '" + textBoxMAN_PAN_11.Text.Trim() + "', '" + textBoxPART_REFERENCE_11.Text.Trim() + "', '" + textBoxQTY_12.Text.Trim() + "', '" + textBoxDESCRIPTION_12.Text.Trim() + "', '" + textBoxPRICE_12.Text.Trim() + "', '" + textBoxPartUsedAMOUNT_12.Text.Trim() + "', '" + textBoxMAN_PAN_12.Text.Trim() + "', '" + textBoxPART_REFERENCE_12.Text.Trim() + "', '" + textBoxTOTAL_PRICE.Text.Trim() + "', '" + textBoxSERVICE_PERSON_1.Text.Trim() + "', '" + dateTimePickerDATE_1.Text.Trim() + "', '" + textBoxHOURS_1.Text.Trim() + "', '" + textBoxRATES_1.Text.Trim() + "', '" + textBoxSERVICE_PERSON_2.Text.Trim() + "', '" + dateTimePickerDATE_2.Text.Trim() + "', '" + textBoxHOURS_2.Text.Trim() + "', '" + textBoxRATES_2.Text.Trim() + "', '" + textBoxSERVICE_PERSON_3.Text.Trim() + "', '" + dateTimePickerDATE_3.Text.Trim() + "', '" + textBoxHOURS_3.Text.Trim() + "', '" + textBoxRATES_3.Text.Trim() + "', '" + textBoxCOMMENTS.Text.Trim() + "', '" + textBoxSERVICE_SUPERVISED_BY.Text.Trim() + "', '" + textBoxSIGNED.Text.Trim() + "', '" + textBoxREASON_1.Text.Trim() + "', '" + textBoxREASON_2.Text.Trim() + "', '" + textBoxREASON_3.Text.Trim() + "', '" + textBoxREASON_4.Text.Trim() + "', '" + textBoxREASON_5.Text.Trim() + "', '" + textBoxREASON_6.Text.Trim() + "', '" + textBoxREASON_7.Text.Trim() + "', '" + textBoxREASON_8.Text.Trim() + "', '" + textBoxREASON_9.Text.Trim() + "', '" + textBoxREASON_10.Text.Trim() + "', '" + textBoxREASON_11.Text.Trim() + "', '" + textBoxREASON_12.Text.Trim() + "')");
                 }
             }
             catch (SqlException ex)
@@ -2535,164 +386,139 @@ namespace Project_Product_List
 
                 Console.WriteLine(ex.ToString());
             }
-
         }
+
+
+
 
         public void Restore_data_from_temporary_data_base()
         {
-
-
-            restoreMODEL();
-            restoreSERIAL();
-            restoreQTY_1();
-            restoreDESCRIPTION_1();
-            restoreServiceDate1();
-            restoreInvoiceDate1();
-            restoreSoldTo();
-            restorePRICE_1();
-            restoreAMOUNT_1();
-            restoreMAN_PN1();
-            restorePART_REFERENCE_1();
-            restoreQTY_2();
-            restoreDESCRIPTION_2();
-            restorePRICE_2();
-            restoreAMOUNT_2();
-            restoreMAN_PN2();
-            restorePART_REFERENCE_2();
-            restoreQTY_3();
-            restoreDESCRIPTION_3();
-            restorePRICE_3();
-            restoreAMOUNT_3();
-            restoreMAN_PN3();
-            restorePART_REFERENCE_3();
-            restoreQTY_4();
-            restoreDESCRIPTION_4();
-            restorePRICE_4();
-            restoreAMOUNT_4();
-            restoreMAN_PN4();
-            restorePART_REFERENCE_4();
-            restoreQTY_5();
-            restoreDESCRIPTION_5();
-            restorePRICE_5();
-            restoreAMOUNT_5();
-            restoreMAN_PN5();
-            restorePART_REFERENCE_5();
-            restoreQTY_6();
-            restoreDESCRIPTION_6();
-            restorePRICE_6();
-            restoreAMOUNT_6();
-            restoreMAN_PN6();
-            restorePART_REFERENCE_6();
-            restoreQTY_7();
-            restoreDESCRIPTION_7();
-            restorePRICE_7();
-            restoreAMOUNT_7();
-            restoreMAN_PN7();
-            restorePART_REFERENCE_7();
-            restoreQTY_8();
-            restoreDESCRIPTION_8();
-            restorePRICE_8();
-            restoreAMOUNT_8();
-            restoreMAN_PN8();
-            restorePART_REFERENCE_8();
-            restoreQTY_9();
-            restoreDESCRIPTION_9();
-            restorePRICE_9();
-            restoreAMOUNT_9();
-            restoreMAN_PN9();
-            restorePART_REFERENCE_9();
-            restoreQTY_10();
-            restoreDESCRIPTION_10();
-            restorePRICE_10();
-            restoreAMOUNT_10();
-            restoreMAN_PN10();
-            restorePART_REFERENCE_10();
-            restoreQTY_11();
-            restoreDESCRIPTION_11();
-            restorePRICE_11();
-            restoreAMOUNT_11();
-            restoreMAN_PN11();
-            restorePART_REFERENCE_11();
-            restoreQTY_12();
-            restoreDESCRIPTION_12();
-            restorePRICE_12();
-            restoreAMOUNT_12();
-            restoreMAN_PN12();
-            restorePART_REFERENCE_12();
-
-            restoreTECHNICIAN_PERSON_1();
-            restoreTECHNICIAN_PERSON_DATE_1();
-            restoreTECHNICIAN_PERSON_HOURS_1();
-            restoreTECHNICIAN_PERSON_RATES_1();
-
-
-            restoreTECHNICIAN_PERSON_2();
-            restoreTECHNICIAN_PERSON_DATE_2();
-            restoreTECHNICIAN_PERSON_HOURS_2();
-            restoreTECHNICIAN_PERSON_RATES_2();
-
-            restoreTECHNICIAN_PERSON_3();
-            restoreTECHNICIAN_PERSON_DATE_3();
-            restoreTECHNICIAN_PERSON_HOURS_3();
-            restoreTECHNICIAN_PERSON_RATES_3();
-
-            restoreCOMMENTS();
-            restoreSERVICE_SUPERVISED_BY();
-            restoreSIGNED();
-            restoreTOTAL_PRICE();
-
+            General.ActOnDb("SELECT", "MODEL", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMODEL);
+            General.ActOnDb("SELECT", "SERIAL", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxSerial);
+            General.ActOnDb("SELECT", "SERVICE_DATE", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), dateTimePickerSERVICE_DATE);
+            General.ActOnDb("SELECT", "INVOICE_DATE", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), dateTimePickerINVOICE_DATE);
+            General.ActOnDb("SELECT", "SOLD_TO", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), comboBoxSoldTo);
+            General.ActOnDb("SELECT", "QTY_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_1);
+            General.ActOnDb("SELECT", "DESCRIPTION_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_1);
+            General.ActOnDb("SELECT", "PRICE_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_1);
+            General.ActOnDb("SELECT", "AMOUNT_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_1);
+            General.ActOnDb("SELECT", "MAN_PN_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_1);
+            General.ActOnDb("SELECT", "PART_REFERENCE_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_1);
+            General.ActOnDb("SELECT", "QTY_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_2);
+            General.ActOnDb("SELECT", "DESCRIPTION_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_2);
+            General.ActOnDb("SELECT", "PRICE_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_2);
+            General.ActOnDb("SELECT", "AMOUNT_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_2);
+            General.ActOnDb("SELECT", "MAN_PN_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_2);
+            General.ActOnDb("SELECT", "PART_REFERENCE_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_2);
+            General.ActOnDb("SELECT", "QTY_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_3);
+            General.ActOnDb("SELECT", "DESCRIPTION_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_3);
+            General.ActOnDb("SELECT", "PRICE_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_2);
+            General.ActOnDb("SELECT", "AMOUNT_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_3);
+            General.ActOnDb("SELECT", "MAN_PN_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_3);
+            General.ActOnDb("SELECT", "PART_REFERENCE_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_3);
+            General.ActOnDb("SELECT", "QTY_4", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_4);
+            General.ActOnDb("SELECT", "DESCRIPTION_4", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_4);
+            General.ActOnDb("SELECT", "PRICE_4", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_4);
+            General.ActOnDb("SELECT", "AMOUNT_4", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_4);
+            General.ActOnDb("SELECT", "MAN_PN_4", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_4);
+            General.ActOnDb("SELECT", "PART_REFERENCE_4", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_4);
+            General.ActOnDb("SELECT", "QTY_5", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_5);
+            General.ActOnDb("SELECT", "DESCRIPTION_5", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_5);
+            General.ActOnDb("SELECT", "PRICE_5", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_5);
+            General.ActOnDb("SELECT", "AMOUNT_5", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_5);
+            General.ActOnDb("SELECT", "MAN_PN_5", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_5);
+            General.ActOnDb("SELECT", "PART_REFERENCE_5", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_5);
+            General.ActOnDb("SELECT", "QTY_6", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_6);
+            General.ActOnDb("SELECT", "DESCRIPTION_6", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_6);
+            General.ActOnDb("SELECT", "PRICE_6", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_6);
+            General.ActOnDb("SELECT", "AMOUNT_6", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_6);
+            General.ActOnDb("SELECT", "MAN_PN_6", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_6);
+            General.ActOnDb("SELECT", "PART_REFERENCE_6", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_6);
+            General.ActOnDb("SELECT", "QTY_7", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_7);
+            General.ActOnDb("SELECT", "DESCRIPTION_7", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_7);
+            General.ActOnDb("SELECT", "PRICE_7", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_7);
+            General.ActOnDb("SELECT", "AMOUNT_7", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_7);
+            General.ActOnDb("SELECT", "MAN_PN_7", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_7);
+            General.ActOnDb("SELECT", "PART_REFERENCE_7", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_7);
+            General.ActOnDb("SELECT", "QTY_8", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_8);
+            General.ActOnDb("SELECT", "DESCRIPTION_8", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_8);
+            General.ActOnDb("SELECT", "PRICE_8", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_8);
+            General.ActOnDb("SELECT", "AMOUNT_8", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_8);
+            General.ActOnDb("SELECT", "MAN_PN_8", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_8);
+            General.ActOnDb("SELECT", "PART_REFERENCE_8", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_8);
+            General.ActOnDb("SELECT", "QTY_9", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_9);
+            General.ActOnDb("SELECT", "DESCRIPTION_9", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_9);
+            General.ActOnDb("SELECT", "PRICE_9", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_9);
+            General.ActOnDb("SELECT", "AMOUNT_9", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_9);
+            General.ActOnDb("SELECT", "MAN_PN_9", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_9);
+            General.ActOnDb("SELECT", "PART_REFERENCE_9", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_9);
+            General.ActOnDb("SELECT", "QTY_10", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_10);
+            General.ActOnDb("SELECT", "DESCRIPTION_10", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_10);
+            General.ActOnDb("SELECT", "PRICE_10", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_10);
+            General.ActOnDb("SELECT", "AMOUNT_10", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_10);
+            General.ActOnDb("SELECT", "MAN_PN_10", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_10);
+            General.ActOnDb("SELECT", "PART_REFERENCE_10", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_10);
+            General.ActOnDb("SELECT", "QTY_11", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_11);
+            General.ActOnDb("SELECT", "DESCRIPTION_11", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_11);
+            General.ActOnDb("SELECT", "PRICE_11", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_11);
+            General.ActOnDb("SELECT", "AMOUNT_11", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_11);
+            General.ActOnDb("SELECT", "MAN_PN_11", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_11);
+            General.ActOnDb("SELECT", "PART_REFERENCE_11", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_11);
+            General.ActOnDb("SELECT", "QTY_12", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxQTY_12);
+            General.ActOnDb("SELECT", "DESCRIPTION_12", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxDESCRIPTION_12);
+            General.ActOnDb("SELECT", "PRICE_12", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPRICE_12);
+            General.ActOnDb("SELECT", "AMOUNT_12", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPartUsedAMOUNT_12);
+            General.ActOnDb("SELECT", "MAN_PN_12", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxMAN_PAN_12);
+            General.ActOnDb("SELECT", "PART_REFERENCE_12", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxPART_REFERENCE_12);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxSERVICE_PERSON_1);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_DATE_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), dateTimePickerDATE_1);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_HOURS_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxHOURS_1);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_RATES_1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxRATES_1);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxSERVICE_PERSON_2);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_DATE_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), dateTimePickerDATE_2);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_HOURS_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxHOURS_2);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_RATES_2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxRATES_2);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxSERVICE_PERSON_3);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_DATE_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), dateTimePickerDATE_3);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_HOURS_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxHOURS_3);
+            General.ActOnDb("SELECT", "TECHNICIAN_PERSON_RATES_3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxRATES_3);
+            General.ActOnDb("SELECT", "COMMENTS", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxCOMMENTS);
+            General.ActOnDb("SELECT", "SERVICE_SUPERVISED_BY", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxSERVICE_SUPERVISED_BY);
+            General.ActOnDb("SELECT", "SIGNED", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxSIGNED);
+            General.ActOnDb("SELECT", "TOTAL_PRICE", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxTOTAL_PRICE);
+            General.ActOnDb("SELECT", "REASON1", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_1);
+            General.ActOnDb("SELECT", "REASON2", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_2);
+            General.ActOnDb("SELECT", "REASON3", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_3);
+            General.ActOnDb("SELECT", "REASON4", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_4);
+            General.ActOnDb("SELECT", "REASON5", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_5);
+            General.ActOnDb("SELECT", "REASON6", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_6);
+            General.ActOnDb("SELECT", "REASON7", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_7);
+            General.ActOnDb("SELECT", "REASON8", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_8);
+            General.ActOnDb("SELECT", "REASON9", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_9);
+            General.ActOnDb("SELECT", "REASON10", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_10);
+            General.ActOnDb("SELECT", "REASON11", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_11);
+            General.ActOnDb("SELECT", "REASON12", "SERVICE_FORM", "RMA", comboBoxRMA_NUMBER.Text.Trim(), textBoxREASON_12);
 
         }
+
+
+
 
         private void restoreServiceFormData(string v1, DateTimePicker dateTimePickerDATE_1, string v2)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete_Previous_Data_From_DataBase_Preventing_duplication_of_information_in_ServiceForm_dt()
-        {
-
-            try
-            {
-                SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                string RMA = comboBoxRMA_NUMBER.Text.Trim();
-
-                cmd.CommandText = "DELETE FROM ServiceForm_dt WHERE RMA = '" + RMA + "';";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                if (reader.Read())
-                {
-                    reader.Read();
-                }
-
-                sqlConnection1.Close();
-            }
-            catch (SqlException ex)
-            {
-
-                Console.WriteLine(ex.ToString());
-            }
-
-
-        }
-
-        public void service_form_to_pdf()
+        
+        public void PDFCreator()
         {
             ///////////// Creating the document  /////////////
 
             FontFactory.RegisterDirectories();
 
-
+            int CURRENT_YEAR = DateTime.Now.Year;
             int SERVICE_FORM_YEAR = dateTimePickerSERVICE_DATE.Value.Year;
 
-            string SavePath = "U:" + @"\" + "Service form - NEW" + @"\" + SERVICE_FORM_YEAR + @"\";
 
             if (!Directory.Exists(SavePath))
             {
@@ -2702,20 +528,20 @@ namespace Project_Product_List
             int serviceFormCounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length) + 1; // Will Retrieve count of PDF files  in directry
 
 
-            SavePath = "U:" + @"\" + "Service form - NEW" + @"\" + SERVICE_FORM_YEAR + @"\" + "SERVICE FORM #" + comboBoxRMA_NUMBER.Text + "_SF" + serviceFormCounter + ".pdf";
+            string SavePathNew = SavePath + "SERVICE FORM #" + comboBoxRMA_NUMBER.Text + "_SF" + serviceFormCounter + ".pdf";
 
 
 
-            while (File.Exists(SavePath))
+            while (File.Exists(SavePathNew))
             {
                 serviceFormCounter += 1;
-                SavePath = "U:" + @"\" + "Service form - NEW" + @"\" + SERVICE_FORM_YEAR + @"\" + "SERVICE FORM #" + comboBoxRMA_NUMBER.Text + "_SF" + serviceFormCounter + ".pdf";
+                SavePathNew = SavePath + "SERVICE FORM #" + comboBoxRMA_NUMBER.Text + "_SF" + serviceFormCounter + ".pdf";
             }
 
 
 
             Document doc = new Document(iTextSharp.text.PageSize.A4);
-            PdfWriter wri = PdfWriter.GetInstance(doc, new FileStream(SavePath, FileMode.Create));  ///////////////// ?
+            PdfWriter wri = PdfWriter.GetInstance(doc, new FileStream(SavePathNew, FileMode.Create));  ///////////////// ?
 
 
             doc.Open();
@@ -2821,15 +647,16 @@ namespace Project_Product_List
 
             //////////////////////   table2   ///////////////////////////////
 
-            PdfPTable table2 = new PdfPTable(6);
+            PdfPTable table2 = new PdfPTable(7);
             PdfPCell cell2 = new PdfPCell();
-            cell2.Colspan = 6;
-            cell2.HorizontalAlignment = 6;
+            cell2.Colspan = 7;
+            cell2.HorizontalAlignment = 7;
             table2.AddCell(cell2);
-            table2.SetWidths(new int[] { 2, 7, 3, 3, 2, 3 });
+            table2.SetWidths(new int[] { 2, 4, 3, 3, 4, 2, 3 });
 
             table2.AddCell("QTY ");
             table2.AddCell("DESCRIPTION ");
+            table2.AddCell("REASON ");
             table2.AddCell("UTC P/N ");
             table2.AddCell("PART REFERENCE ");
             table2.AddCell("PRICE ");
@@ -2838,6 +665,7 @@ namespace Project_Product_List
 
             table2.AddCell(textBoxQTY_1.Text);
             table2.AddCell(textBoxDESCRIPTION_1.Text);
+            table2.AddCell(textBoxREASON_1.Text);
             table2.AddCell(textBoxMAN_PAN_1.Text);
             table2.AddCell(textBoxPART_REFERENCE_1.Text);
             table2.AddCell(textBoxPRICE_1.Text);
@@ -2845,81 +673,114 @@ namespace Project_Product_List
             //
             table2.AddCell(textBoxQTY_2.Text);
             table2.AddCell(textBoxDESCRIPTION_2.Text);
+            table2.AddCell(textBoxREASON_2.Text);
             table2.AddCell(textBoxMAN_PAN_2.Text);
             table2.AddCell(textBoxPART_REFERENCE_2.Text);
             table2.AddCell(textBoxPRICE_2.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_2.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_3.Text);
             table2.AddCell(textBoxDESCRIPTION_3.Text);
+            table2.AddCell(textBoxREASON_3.Text);
             table2.AddCell(textBoxMAN_PAN_3.Text);
             table2.AddCell(textBoxPART_REFERENCE_3.Text);
             table2.AddCell(textBoxPRICE_3.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_3.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_4.Text);
             table2.AddCell(textBoxDESCRIPTION_4.Text);
+            table2.AddCell(textBoxREASON_4.Text);
             table2.AddCell(textBoxMAN_PAN_4.Text);
             table2.AddCell(textBoxPART_REFERENCE_4.Text);
             table2.AddCell(textBoxPRICE_4.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_4.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_5.Text);
             table2.AddCell(textBoxDESCRIPTION_5.Text);
+            table2.AddCell(textBoxREASON_5.Text);
             table2.AddCell(textBoxMAN_PAN_5.Text);
             table2.AddCell(textBoxPART_REFERENCE_5.Text);
             table2.AddCell(textBoxPRICE_5.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_5.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_6.Text);
             table2.AddCell(textBoxDESCRIPTION_6.Text);
+            table2.AddCell(textBoxREASON_6.Text);
             table2.AddCell(textBoxMAN_PAN_6.Text);
             table2.AddCell(textBoxPART_REFERENCE_6.Text);
             table2.AddCell(textBoxPRICE_6.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_6.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_7.Text);
             table2.AddCell(textBoxDESCRIPTION_7.Text);
+            table2.AddCell(textBoxREASON_7.Text);
             table2.AddCell(textBoxMAN_PAN_7.Text);
             table2.AddCell(textBoxPART_REFERENCE_7.Text);
             table2.AddCell(textBoxPRICE_7.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_7.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_8.Text);
             table2.AddCell(textBoxDESCRIPTION_8.Text);
+            table2.AddCell(textBoxREASON_8.Text);
             table2.AddCell(textBoxMAN_PAN_8.Text);
             table2.AddCell(textBoxPART_REFERENCE_8.Text);
             table2.AddCell(textBoxPRICE_8.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_8.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_9.Text);
             table2.AddCell(textBoxDESCRIPTION_9.Text);
+            table2.AddCell(textBoxREASON_9.Text);
             table2.AddCell(textBoxMAN_PAN_9.Text);
             table2.AddCell(textBoxPART_REFERENCE_9.Text);
             table2.AddCell(textBoxPRICE_9.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_9.Text);
+            
+
             //
             table2.AddCell(textBoxQTY_10.Text);
             table2.AddCell(textBoxDESCRIPTION_10.Text);
+            table2.AddCell(textBoxREASON_10.Text);
             table2.AddCell(textBoxMAN_PAN_10.Text);
             table2.AddCell(textBoxPART_REFERENCE_10.Text);
             table2.AddCell(textBoxPRICE_10.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_10.Text);
+            
+
 
             //
             table2.AddCell(textBoxQTY_11.Text);
             table2.AddCell(textBoxDESCRIPTION_11.Text);
+            table2.AddCell(textBoxREASON_11.Text);
             table2.AddCell(textBoxMAN_PAN_11.Text);
             table2.AddCell(textBoxPART_REFERENCE_11.Text);
             table2.AddCell(textBoxPRICE_11.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_11.Text);
+           
+
             //
             table2.AddCell(textBoxQTY_12.Text);
             table2.AddCell(textBoxDESCRIPTION_12.Text);
+            table2.AddCell(textBoxREASON_12.Text);
             table2.AddCell(textBoxMAN_PAN_12.Text);
             table2.AddCell(textBoxPART_REFERENCE_12.Text);
             table2.AddCell(textBoxPRICE_12.Text);
             table2.AddCell(textBoxPartUsedAMOUNT_12.Text);
+            
+
             //
 
             table2.WidthPercentage = 100f;
@@ -2990,8 +851,11 @@ namespace Project_Product_List
 
 
             ////////////////////// END table3   ///////////////////////////////
+            ///
 
 
+            
+            
             ////////////////////// Page design  //////////////////////
 
 
@@ -3020,9 +884,118 @@ namespace Project_Product_List
             doc.Add(SIGNED);
             doc.Add(AddressParagraph);
 
+
+
+            ////////////////////// Images  ///////////////////////////////
+
+            Paragraph Image1Lable = new Paragraph("Image 1:");
+            Paragraph Image2Lable = new Paragraph("Image 2:");
+            Paragraph Image3Lable = new Paragraph("Image 3:");
+            Paragraph Image4Lable = new Paragraph("Image 4:");
+            Paragraph Image5Lable = new Paragraph("Image 5:");
+            try
+            {
+
+                if((txtImage1.Text.Length > 4) || (txtImage2.Text.Length > 4) || (txtImage3.Text.Length > 4) || (txtImage4.Text.Length > 4)|| (txtImage5.Text.Length > 4))
+                {
+                    for (int i = 0; i < 12; i++)
+                    {
+                        doc.Add(lineDown);
+                    }
+                    doc.Add(TopPNG);
+                    doc.Add(DownPNG);
+
+                }
+                if (txtImage1.Text != "")
+                {
+
+                    string image1 = txtImage1.Text;
+                    Image jpg1 = Image.GetInstance(image1);
+                    //Resize image depend upon your need
+                    jpg1.ScaleToFit(270f, 260f);
+                    //Give space before image
+                    jpg1.SpacingBefore = 10f;
+                    //Give some space after the image
+                    jpg1.SpacingAfter = 3f;
+                    jpg1.Alignment = Element.ALIGN_CENTER;
+                    doc.Add(Image1Lable);
+                    doc.Add(jpg1);
+                }
+
+                if (txtImage2.Text != "")
+                {
+                    string image2 = txtImage2.Text;
+                    Image jpg2 = Image.GetInstance(image2);
+                    //Resize image depend upon your need
+                    jpg2.ScaleToFit(270f, 260f);
+                    //Give space before image
+                    jpg2.SpacingBefore = 10f;
+                    //Give some space after the image
+                    jpg2.SpacingAfter = 1f;
+                    jpg2.Alignment = Element.ALIGN_CENTER;
+                    doc.Add(Image2Lable);
+                    doc.Add(jpg2);
+
+                }
+
+                if (txtImage3.Text != "")
+                {
+                    string image3 = txtImage3.Text;
+                    Image jpg3 = Image.GetInstance(image3);
+                    //Resize image depend upon your need
+                    jpg3.ScaleToFit(270f, 260f);
+                    //Give space before image
+                    jpg3.SpacingBefore = 10f;
+                    //Give some space after the image
+                    jpg3.SpacingAfter = 1f;
+                    jpg3.Alignment = Element.ALIGN_CENTER;
+                    doc.Add(Image3Lable);
+                    doc.Add(jpg3);
+
+                }
+
+                if (txtImage4.Text != "")
+                {
+                    string image4 = txtImage4.Text;
+                    Image jpg4 = Image.GetInstance(image4);
+                    //Resize image depend upon your need
+                    jpg4.ScaleToFit(270f, 260f);
+                    //Give space before image
+                    jpg4.SpacingBefore = 10f;
+                    //Give some space after the image
+                    jpg4.SpacingAfter = 1f;
+                    jpg4.Alignment = Element.ALIGN_CENTER;
+                    doc.Add(Image4Lable);
+                    doc.Add(jpg4);
+
+                }
+
+                if (txtImage5.Text != "")
+                {
+                    string image5 = txtImage5.Text;
+                    Image jpg5 = Image.GetInstance(image5);
+                    //Resize image depend upon your need
+                    jpg5.ScaleToFit(270f, 260f);
+                    //Give space before image
+                    jpg5.SpacingBefore = 10f;
+                    //Give some space after the image
+                    jpg5.SpacingAfter = 1f;
+                    jpg5.Alignment = Element.ALIGN_CENTER;
+                    doc.Add(Image5Lable);
+                    doc.Add(jpg5);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            
+
             doc.Close();
 
             MessageBox.Show("Service form Create Successfully !");
+            
 
         }
 
@@ -3053,26 +1026,42 @@ namespace Project_Product_List
 
         private void ServiceForm_Load(object sender, EventArgs e)
         {
+            
+            int SERVICE_FORM_YEAR = DateTime.Now.Year;
 
-            int SERVICE_FORM_YEAR = dateTimePickerSERVICE_DATE.Value.Year;
-
-            string SavePath = "U:" + @"\" + "Service form - NEW" + @"\" + SERVICE_FORM_YEAR + @"\";
 
             if (!Directory.Exists(SavePath))
             {
-                Directory.CreateDirectory(SavePath);
+                try
+                {
+                    Directory.CreateDirectory(SavePath);
+                }
+                catch
+                {
+                    // Bring up a dialog to chose a folder path in which to open or save a file.
+                    var folderBrowserDialog1 = new FolderBrowserDialog();
+
+                    // Show the FolderBrowserDialog.
+                    DialogResult result = folderBrowserDialog1.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        SavePath = folderBrowserDialog1.SelectedPath;
+                    }
+                }
             }
 
 
             try
             {
-                LOAD_Customers_TO_ComboBox();
+                Load_Customers_To_ComboBox();
                 LOAD_RMA_NUMBERS_TO_COMBO_BOX();
             }
             catch (SqlException Ex)
             {
                 MessageBox.Show(Ex.Message);
             }
+            comboBoxSERVICED_AT.Text = "Underwater Technologies Center Ltd.";
+
         }
 
         private void label17_Click(object sender, EventArgs e)
@@ -3088,67 +1077,108 @@ namespace Project_Product_List
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SerialNumber1 FROM [RMA_dt] WHERE RMA_Number = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-            
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxSerial.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SerialNumber1 FROM RMA WHERE RMA_Number = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxSerial.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-
-
-
-            con.Close();
         }
 
         public void restoreModelOnLoad()
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Description1 FROM [RMA_dt] WHERE RMA_Number = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxMODEL.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Description1 FROM RMA WHERE RMA_Number = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxMODEL.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
         }
 
         public void restoreSoldToOnLoad()
         {
             string RMA_NUMBER = comboBoxRMA_NUMBER.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = ConnectionString;
-            con.Open();
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Customer_Name FROM [RMA_dt] WHERE RMA_Number = '" + RMA_NUMBER + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxSoldTo.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Customer_Name FROM RMA WHERE RMA_Number = '" + RMA_NUMBER + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxSoldTo.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
         }
 
 
@@ -3156,7 +1186,7 @@ namespace Project_Product_List
         {
             try
             {
-                comboBoxSERVICED_AT.Text = "Underwater Technologies Center Ltd.";    
+                comboBoxSERVICED_AT.Text = "Underwater Technologies Center Ltd.";
                 LOAD_RMA_DATE_TO_DATE_TIME_PICKER_INVOICE_DATE();
                 LOAD_RMA_DATE_TO_DATE_TIME_PICKER_SERVICE_DATE();
                 LOAD_PRODUCT_TO_TEXT_BOX();
@@ -3208,8 +1238,8 @@ namespace Project_Product_List
         {
             try
             {
-                Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                Save_into_temporary_dataBase();
+                Delete_Previous_Data_From_DataBase();
+                Done_and_Save_into_dataBase();
                 MessageBox.Show(" Save successfully !");
                 new ChooseTestForm().Show();
                 this.Hide();
@@ -3230,7 +1260,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\SERVICE FORM.docx";
+            pi.FileName = Paths.Paths.SERVICE_FORM_HELP_FILE;
 
             p.StartInfo = pi;
 
@@ -3248,8 +1278,8 @@ namespace Project_Product_List
         {
             try
             {
-                Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                Save_into_temporary_dataBase();
+                Delete_Previous_Data_From_DataBase();
+                Done_and_Save_into_dataBase();
                 MessageBox.Show(" Save successfully !");
                 clearFieldsAfterDone();
             }
@@ -3265,11 +1295,11 @@ namespace Project_Product_List
             {
                 try
                 {
-                    Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                    Delete_Previous_Data_From_DataBase_Preventing_duplication_of_information_in_ServiceForm_dt();
-                    Save_into_temporary_dataBase();
+                    Delete_Previous_Data_From_DataBase();
                     Done_and_Save_into_dataBase();
-                    service_form_to_pdf();
+                    PDFCreator();
+
+
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         try
@@ -3288,21 +1318,9 @@ namespace Project_Product_List
                 }
                 catch (SqlException Ex)
                 {
-                    MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so Service form document will be created, but it will not be stored in the Base database");
-                    service_form_to_pdf();
-                    if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        try
-                        {
-                            SendToPrinter_ServiceForm();
-                        }
-                        catch (Exception Ex2)
-                        {
-                            MessageBox.Show(Ex2.Message);
-                        }
+                    MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so Service form document will be created, but it will not be stored in the database");
+                    PDFCreator();
 
-                    }
-                    MessageBox.Show("Successfully Done !");
                 }
             }
         }
@@ -3311,8 +1329,8 @@ namespace Project_Product_List
         {
             try
             {
-                Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                Save_into_temporary_dataBase();
+                Delete_Previous_Data_From_DataBase();
+                Done_and_Save_into_dataBase();
                 MessageBox.Show(" Save successfully !");
                 clearFieldsAfterDone();
             }
@@ -3326,42 +1344,55 @@ namespace Project_Product_List
         void updateStatusOf_RMA_As_Fixed()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+  
             string RMANumber = comboBoxRMA_NUMBER.Text.Trim();
-
-            cmd.CommandText = "UPDATE RMA_dt SET deviceBeenFixed = '" + 1 + "'  WHERE RMA_Number = '" + RMANumber + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
 
-            sqlConnection1.Open();
 
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET deviceBeenFixed = '" + 1 + "'  WHERE RMA_Number = '" + RMANumber + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
         }
 
 
         private void SendToPrinter_ServiceForm()
         {
-            int serviceFormyear = dateTimePickerSERVICE_DATE.Value.Year;
 
-            string SavePath = "U:" + @"\" + "Service form - NEW" + @"\" + serviceFormyear + @"\";
 
-            int serviceFormCounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length) ; // Will Retrieve count of PDF files  in directry
+            int serviceFormCounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length); // Will Retrieve count of PDF files  in directry
 
             ProcessStartInfo info = new ProcessStartInfo();
             info.Verb = "print";
-            
 
-            info.FileName = "U:" + @"\" + "Service form - NEW" + @"\" + serviceFormyear + @"\" + "SERVICE FORM #" + comboBoxRMA_NUMBER.Text + "_SF" + serviceFormCounter + ".pdf";
+
+            info.FileName = SavePath + "SERVICE FORM #" + comboBoxRMA_NUMBER.Text + "_SF" + serviceFormCounter + ".pdf";
             //MessageBox.Show(info.FileName);
             //return;
 
@@ -3388,18 +1419,17 @@ namespace Project_Product_List
         }
 
 
-
         private void button3_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you Done with this Service form ?", "Done", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
-                    Delete_Previous_Data_From_DataBaseTEMPORARY_dt();
-                    Delete_Previous_Data_From_DataBase_Preventing_duplication_of_information_in_ServiceForm_dt();
-                    Save_into_temporary_dataBase();
+                    Delete_Previous_Data_From_DataBase();
                     Done_and_Save_into_dataBase();
-                    service_form_to_pdf();
+                    PDFCreator();
+
+
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         try
@@ -3410,29 +1440,18 @@ namespace Project_Product_List
                         {
                             MessageBox.Show(Ex.Message);
                         }
-                        
+
                     }
-                    MessageBox.Show("Successfully Done !");
                     updateStatusOf_RMA_As_Fixed();
                     clearFieldsAfterDone();
+                    MessageBox.Show("Done Successfully  !");
+
                 }
                 catch (SqlException Ex)
                 {
-                    MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so Service form document will be created, but it will not be stored in the Base database");
-                    service_form_to_pdf();
-                    if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        try
-                        {
-                            SendToPrinter_ServiceForm();
-                        }
-                        catch (Exception Ex2)
-                        {
-                            MessageBox.Show(Ex2.Message);
-                        }
-                        
-                    }
-                    MessageBox.Show("Successfully Done !");
+                    MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so Service form document will be created, but it will not be stored in the database");
+                    PDFCreator();
+
                 }
             }
         }
@@ -3440,34 +1459,38 @@ namespace Project_Product_List
 
         void update_Status_Of_RMA_As_Open()
         {
-            try
+
+            string RMANumber = comboBoxRMA_NUMBER.Text.Trim();//   
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
+
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlConnection sqlConnection1 = new SqlConnection(ConnectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                string RMANumber = comboBoxRMA_NUMBER.Text.Trim();//   
-                cmd.CommandText = "UPDATE RMA_dt SET deviceBeenFixed = '" + 0 + "'  WHERE RMA_Number = '" + RMANumber + "' and deviceBeenFixed = '" + 1 + "';";
-
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                try
                 {
-                    reader.Read();
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET deviceBeenFixed = '" + 0 + "'  WHERE RMA_Number = '" + RMANumber + "' and deviceBeenFixed = '" + 1 + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
                 }
-
-                sqlConnection1.Close();
-
-                MessageBox.Show("The RMA is reopened.\nYou can edit the continuation again.\nPlease note that once the file is closed again, a new document will be created,\nand the previous document will be deleted.");
-            }
-            catch (SqlException Ex)
-            {
-                MessageBox.Show(Ex.Message);
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
         }
@@ -3481,6 +1504,9 @@ namespace Project_Product_List
                 comboBoxRMA_NUMBER.Items.Clear();
 
                 LOAD_RMA_NUMBERS_TO_COMBO_BOX();
+                MessageBox.Show("Undo Successfully !");
+
+
             }
             catch (SqlException Ex)
             {
@@ -3503,6 +1529,91 @@ namespace Project_Product_List
             {
                 textBoxSIGNED.Text = "Alona Moiseev";
             }
+        }
+
+        public string GetImagePath()
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+
+                    //Read the contents of the file into a stream
+                    var fileStream = openFileDialog.OpenFile();
+
+                }
+            }
+            return filePath;
+        }
+
+
+
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            txtImage1.Text = GetImagePath();
+            if (!(imagesPath.Contains(txtImage1.Text)))
+            {
+                imagesPath.Add(txtImage1.Text);
+            }
+            
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+
+            txtImage2.Text = GetImagePath();
+            if (!(imagesPath.Contains(txtImage2.Text)))
+            {
+                imagesPath.Add(txtImage2.Text);
+            }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            txtImage3.Text = GetImagePath();
+            if (!(imagesPath.Contains(txtImage3.Text)))
+            {
+                imagesPath.Add(txtImage3.Text);
+            }
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            txtImage4.Text = GetImagePath();
+            if (!(imagesPath.Contains(txtImage4.Text)))
+            {
+                imagesPath.Add(txtImage4.Text);
+            }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            txtImage5.Text = GetImagePath();
+            if (!(imagesPath.Contains(txtImage5.Text)))
+            {
+                imagesPath.Add(txtImage5.Text);
+            }
+        }
+
+        private void label30_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label33_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }

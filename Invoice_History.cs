@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Data.SQLite;
+using System.Configuration;
 
 namespace Project_Product_List
 {
     public partial class Invoice_History : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
 
         public Invoice_History()
         {
@@ -30,65 +23,81 @@ namespace Project_Product_List
         public void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string CustomerName = comboBoxCustomerName.Text.Trim();
-            
-            cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxCustomerName.Items.Add(Convert.ToString(reader[0]));
-            }
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomerName.Items.Add(dr["Name"]);
+                    }
 
-            sqlConnection1.Close();
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
         }
 
         public void fillDataGrid()
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Invoice_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM INVOICE", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
+
         public void LOAD_Invoice_NUMBERS_TO_COMBO_BOX()
         {
+            
             /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            //string InvoiceNumber = comboBoxCustomerName.Text.Trim();
-
-            cmd.CommandText = "SELECT Invoice_Number FROM[Invoice_dt]";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxInvoiceNumber.Items.Add(Convert.ToString(reader[0]));
-            }
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Invoice_Number FROM INVOICE";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomerName.Items.Add(dr["Invoice_Number"]);
+                    }
 
-            sqlConnection1.Close();
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
         }
 
 
@@ -109,16 +118,20 @@ namespace Project_Product_List
         
         private void button4_Click(object sender, EventArgs e)
         {
+
+
             string InvoiceNumber = comboBoxInvoiceNumber.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Invoice_dt] where Invoice_Number LIKE '%" + InvoiceNumber + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM INVOICE WHERE Invoice_Number LIKE '%" + InvoiceNumber + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
@@ -126,16 +139,20 @@ namespace Project_Product_List
         {
             string Customer_Name = comboBoxCustomerName.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Invoice_dt] where Customer_Name LIKE '%" + Customer_Name + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM INVOICE WHERE Customer_Name LIKE '%" + Customer_Name + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
         }
+
         private string MyDirectory()
         {
             //MessageBox.Show(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
@@ -147,7 +164,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+            pi.FileName = @"P:\Archive\HELP UTC TESTS\Help.docx";
             p.StartInfo = pi;
 
             try
@@ -217,21 +234,18 @@ namespace Project_Product_List
         {
             string Date = dateTimePicker1.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Invoice_dt] where Date LIKE '%" + Date + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM INVOICE WHERE Date LIKE '%" + Date + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
-
-
-      
-
-
+        
 
         private void comboBoxCustomerName_SelectedIndexChanged(object sender, EventArgs e)
         {

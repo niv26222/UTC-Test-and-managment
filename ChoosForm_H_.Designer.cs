@@ -197,7 +197,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ChoosForm_H_";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Choos Prodocts History";
+            this.Text = "Choose Prodocts History";
             this.Load += new System.EventHandler(this.ChoosForm_H__Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);

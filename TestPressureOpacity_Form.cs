@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Data.SqlServerCe;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Reflection;
+using System.Configuration;
+using System.Data.SQLite;
+using Dapper;
 
 namespace Project_Product_List
 {
@@ -22,7 +18,7 @@ namespace Project_Product_List
 
     public partial class TestPressureOpacity_Form : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+        string SavePath = Paths.Paths.TEST_PRESSURE_OPACITY_PATH;
 
         public TestPressureOpacity_Form()
         {
@@ -34,51 +30,46 @@ namespace Project_Product_List
 
         }
 
-        public void Load_Test_Pressure_Opacity_Name_on_Load()///
+        public void Load_Test_Pressure_Opacity_Name_on_Load()/// 
         {
-            int RMAyear = dateTimePicker1.Value.Year;
-            string SavePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + RMAyear + @"\";
+            int TPOyear = dateTimePicker1.Value.Year;
             int counter = Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length;
-            textBox1.Text = "TPO_" + textBox8.Text  + "_R" + (counter + 1);
+            textBoxItemDescription.Text = "TPO_" + textBox8.Text  + "_R" + (counter + 1);
         }
 
 
         private void TestPressureOpacity_Form_Load(object sender, EventArgs e)
         {
-            int TPOyear = dateTimePicker1.Value.Year;
+            int TPOyear = DateTime.Now.Year;
 
-            string SavePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + TPOyear + @"\";
 
             if (!Directory.Exists(SavePath))
             {
-                Directory.CreateDirectory(SavePath);
+                try
+                {
+                    Directory.CreateDirectory(SavePath);
+                }
+                catch
+                {
+                    // Bring up a dialog to chose a folder path in which to open or save a file.
+                    var folderBrowserDialog1 = new FolderBrowserDialog();
+
+                    // Show the FolderBrowserDialog.
+                    DialogResult result = folderBrowserDialog1.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        SavePath = folderBrowserDialog1.SelectedPath;
+                    }
+                }
             }
 
             Load_Test_Pressure_Opacity_Name_on_Load();
-            LOAD_SERIAL_NUMBER_TO_TEXT_BOX();
+            
+
         }
 
 
-        public void LOAD_SERIAL_NUMBER_TO_TEXT_BOX()
-        {
-
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = connectionString;
-            con.Open();
-
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SerialNumber1 FROM[RMA_dt] WHERE deviceBeenFixed = '" + 0 + "'; ";
-
-            // "SELECT SerialNumber1 FROM[RMA_dt] WHERE isArrived = '" + 0 + "'; ";
-
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-            while (rd.Read())
-            {
-                textBox8.Items.Add(rd[0].ToString());
-            }
-        }
+        
         private void button3_Click(object sender, EventArgs e)
         {
             new Form2().Show();
@@ -89,55 +80,47 @@ namespace Project_Product_List
         {
 
         }
-
-        public void InsertTestPressureOpacityIntoDate()
+        private static string LoadConnectionString(string id = "Default")
         {
+            return ConfigurationManager.ConnectionStrings[id].ConnectionString;
+        }
 
-
+        public void InsertToDataBase()
+        {
             try
             {
-                using (SqlConnection sqlCon = new SqlConnection(connectionString))
+
+                using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
                 {
-                    int TOPyear = dateTimePicker1.Value.Year;
+                    string result;
 
-                    string SavePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + TOPyear + @"\";
-
-                    int TOPcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length) + 1; // Will Retrieve count of PDF files  in directry
+                    int TPOyear = dateTimePicker1.Value.Year;
 
 
-                    string numTest = "TPO_" + textBox8.Text + "_R" + TOPcounter;
+
+                    int TPOcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length) + 1; // Will Retrieve count of PDF files  in directry
 
 
-                    sqlCon.Open();
-                    SqlCommand sqlCmd = new SqlCommand("TestPressureOpacity_add", sqlCon);
-                    sqlCmd.CommandType = CommandType.StoredProcedure;
+                    string numTest = "TPO_" + textBox8.Text + "_R" + TPOcounter;
 
-                    sqlCmd.Parameters.AddWithValue("@DateCreate", dateTimePicker1.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@DateEnd", dateTimePicker2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@NumOfTest", numTest.Trim());
-                    sqlCmd.Parameters.AddWithValue("@ValueUnderPressure", textBox2.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@InitialTime", textBox3.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@FinalTime", textBox4.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TotalTestTime", textBox5.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@ItemDescription", textBox9.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@Serial", textBox8.Text.Trim());
-                    if (checkBox1.Checked == true)
+
+                    if (checkBox1.Checked)
                     {
-                        sqlCmd.Parameters.AddWithValue("@Status", "Pass");
+                        result = "PASS";
                     }
                     else
                     {
-                        sqlCmd.Parameters.AddWithValue("@Status", "Fail");
+                        result = "FAIL";
                     }
-                    sqlCmd.Parameters.AddWithValue("@Comments", textBox6.Text.Trim());
-                    sqlCmd.Parameters.AddWithValue("@TesterName", textBox10.Text.Trim());
 
-                    sqlCmd.ExecuteNonQuery();
-                    sqlCon.Close();
+                    cnn.Execute("insert into TEST_PRESSURE_OPACITY (DateCreate, DateEnd, NumOfTest, ValueUnderPressure, InitialTime, FinalTime, TotalTestTime, ItemDescription, Status, Comments, TesterName) values ('" + dateTimePicker1.Text.Trim() + "', '" + dateTimePicker2.Text.Trim() + "', '" + numTest + "', '" + textBox2.Text.Trim() + "', '" + textBox3.Text.Trim() + "', '" + textBox4.Text.Trim() + "', '" + textBox5.Text.Trim() + "', '" + textBox9.Text.Trim() + "', '" + result + "', '" + textBox6.Text.Trim() + "', '" + textBox10.Text.Trim() + "' )");
+
 
                     MessageBox.Show("Successfully inserted into database");
                 }
+
             }
+
             catch (SqlException ex)
             {
 
@@ -145,6 +128,7 @@ namespace Project_Product_List
             }
 
         }
+
 
         public void clearFieldsAfterDone()
         {
@@ -166,17 +150,16 @@ namespace Project_Product_List
             }
         }
 
-        public void TestPressureOpacityToPDF()
+        public void PDFCreator()
         {
 
             ///////////// Creating the document  /////////////
 
             FontFactory.RegisterDirectories();
 
-
+            int CURRENT_YEAR = DateTime.Now.Year;
             int TPOyear = dateTimePicker1.Value.Year;
 
-            string SavePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + TPOyear + @"\";
 
             if (!Directory.Exists(SavePath))
             {
@@ -186,18 +169,18 @@ namespace Project_Product_List
             int TPOcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length) + 1; // Will Retrieve count of PDF files  in directry
 
 
-            SavePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + TPOyear + @"\" + "TPO_" + textBox8.Text + "_R" + TPOcounter + ".pdf";
+            string SavePathNew = SavePath + "TPO_" + textBox8.Text + "_R" + TPOcounter + ".pdf";
 
 
-            while (File.Exists(SavePath))
+            while (File.Exists(SavePathNew))
             {
                 TPOcounter += 1;
-                SavePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + TPOyear + @"\" + "TPO_" + textBox8.Text + "_R" + TPOcounter + ".pdf";
+                SavePathNew = SavePath + "TPO_" + textBox8.Text + "_R" + TPOcounter + ".pdf";
             }
 
             Document doc = new Document(iTextSharp.text.PageSize.A4);
 
-            PdfWriter wri = PdfWriter.GetInstance(doc, new FileStream(SavePath, FileMode.Create));
+            PdfWriter wri = PdfWriter.GetInstance(doc, new FileStream(SavePathNew, FileMode.Create));
 
 
             doc.Open();
@@ -382,11 +365,10 @@ namespace Project_Product_List
             ProcessStartInfo info = new ProcessStartInfo();
             info.Verb = "print";
 
-            string SavePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + TPOyear + @"\";
             
             int PDFcounter = (Directory.GetFiles(SavePath, "*.pdf", SearchOption.AllDirectories).Length); // Will Retrieve count of PDF files  in directry
 
-            info.FileName = "U:" + @"\" + "Test Pressure Opacity" + @"\" + TPOyear + @"\" + "TPO_" + textBox8.Text + "_R" + PDFcounter + ".pdf";
+            info.FileName = SavePath + "TPO_" + textBox8.Text + "_R" + PDFcounter + ".pdf";
 
             //MessageBox.Show(SavePath + "\n" + info.FileName);
 
@@ -419,20 +401,17 @@ namespace Project_Product_List
             if (checkBox1.Checked == false && checkBox2.Checked == false)
             {
                 MessageBox.Show("Please Fill the Status checkBox");
-
             }
             else
             {
                 try
                 {
-                    InsertTestPressureOpacityIntoDate();
 
-                    TestPressureOpacityToPDF();
+                    InsertToDataBase();
+                    PDFCreator();
                     
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                       
-
                         try
                         {
                             SendToPrinter_TPO();
@@ -440,8 +419,6 @@ namespace Project_Product_List
                         catch (Exception Ex)
                         {
                             MessageBox.Show(Ex.Message);
-
-
                         }
                     }
                     clearFieldsAfterDone();
@@ -450,7 +427,7 @@ namespace Project_Product_List
                 catch (Exception Ex)
                 {
                     MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so Test Pressure Opacity document will be created, but it will not be stored in the Base database");
-                    TestPressureOpacityToPDF();
+                    PDFCreator();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         SendToPrinter_TPO();
@@ -480,7 +457,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\TPO.docx";
+            pi.FileName = Paths.Paths.TEST_PRESSURE_OPACITY_HELP_FILE;
 
 
             p.StartInfo = pi;
@@ -506,9 +483,9 @@ namespace Project_Product_List
             {
                 try
                 {
-                    InsertTestPressureOpacityIntoDate();
+                    InsertToDataBase();
 
-                    TestPressureOpacityToPDF();
+                    PDFCreator();
 
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
@@ -525,13 +502,13 @@ namespace Project_Product_List
 
                         }
                     }
-                    clearFieldsAfterDone();
+                    //clearFieldsAfterDone();
                     Load_Test_Pressure_Opacity_Name_on_Load();
                 }
                 catch (Exception Ex)
                 {
                     MessageBox.Show(Ex.Message + "\n\n\nPlease note that the connection to Data Base has failed, so Test Pressure Opacity document will be created, but it will not be stored in the Base database");
-                    TestPressureOpacityToPDF();
+                    PDFCreator();
                     if (MessageBox.Show("Do you want to send the document to print?", "Send to printer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         SendToPrinter_TPO();

@@ -83,14 +83,14 @@
             this.textBoxSerialNumber = new System.Windows.Forms.ComboBox();
             this.button4 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.doneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.watchStockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textBoxBOOTVersion = new System.Windows.Forms.ComboBox();
             this.textBoxSoftwareVersion = new System.Windows.Forms.ComboBox();
             this.textBoxSLAVEVersion = new System.Windows.Forms.ComboBox();
             this.textBoxCircleVersion = new System.Windows.Forms.ComboBox();
-            this.watchStockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -744,22 +744,15 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helpToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.doneToolStripMenuItem,
-            this.watchStockToolStripMenuItem});
+            this.watchStockToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1405, 24);
             this.menuStrip1.TabIndex = 380;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -774,6 +767,20 @@
             this.doneToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.doneToolStripMenuItem.Text = "Done";
             this.doneToolStripMenuItem.Click += new System.EventHandler(this.doneToolStripMenuItem_Click);
+            // 
+            // watchStockToolStripMenuItem
+            // 
+            this.watchStockToolStripMenuItem.Name = "watchStockToolStripMenuItem";
+            this.watchStockToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
+            this.watchStockToolStripMenuItem.Text = "Watch stock";
+            this.watchStockToolStripMenuItem.Click += new System.EventHandler(this.watchStockToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // textBoxBOOTVersion
             // 
@@ -826,13 +833,6 @@
             this.textBoxCircleVersion.Name = "textBoxCircleVersion";
             this.textBoxCircleVersion.Size = new System.Drawing.Size(121, 24);
             this.textBoxCircleVersion.TabIndex = 384;
-            // 
-            // watchStockToolStripMenuItem
-            // 
-            this.watchStockToolStripMenuItem.Name = "watchStockToolStripMenuItem";
-            this.watchStockToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
-            this.watchStockToolStripMenuItem.Text = "Watch stock";
-            this.watchStockToolStripMenuItem.Click += new System.EventHandler(this.watchStockToolStripMenuItem_Click);
             // 
             // Add_new_product_Form
             // 

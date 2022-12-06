@@ -34,7 +34,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBoxItemDescription = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -99,6 +98,7 @@
             this.doneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label17 = new System.Windows.Forms.Label();
+            this.textBoxItemDescription = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -152,13 +152,6 @@
             this.label5.Size = new System.Drawing.Size(66, 16);
             this.label5.TabIndex = 4;
             this.label5.Text = "Test Date";
-            // 
-            // textBoxItemDescription
-            // 
-            this.textBoxItemDescription.Location = new System.Drawing.Point(150, 35);
-            this.textBoxItemDescription.Name = "textBoxItemDescription";
-            this.textBoxItemDescription.Size = new System.Drawing.Size(141, 20);
-            this.textBoxItemDescription.TabIndex = 5;
             // 
             // label6
             // 
@@ -678,6 +671,7 @@
             this.menuStrip1.Size = new System.Drawing.Size(1405, 24);
             this.menuStrip1.TabIndex = 566;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // saveToolStripMenuItem
             // 
@@ -710,6 +704,19 @@
             this.label17.Size = new System.Drawing.Size(758, 83);
             this.label17.TabIndex = 567;
             this.label17.Text = "Test Pressure Report";
+            this.label17.Click += new System.EventHandler(this.label17_Click);
+            // 
+            // textBoxItemDescription
+            // 
+            this.textBoxItemDescription.FormattingEnabled = true;
+            this.textBoxItemDescription.Items.AddRange(new object[] {
+            "UW-28",
+            "UW-14",
+            "BA28S"});
+            this.textBoxItemDescription.Location = new System.Drawing.Point(150, 35);
+            this.textBoxItemDescription.Name = "textBoxItemDescription";
+            this.textBoxItemDescription.Size = new System.Drawing.Size(141, 21);
+            this.textBoxItemDescription.TabIndex = 568;
             // 
             // TestPressureReport_Form
             // 
@@ -717,6 +724,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1405, 728);
+            this.Controls.Add(this.textBoxItemDescription);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.textBoxSerialNumber);
@@ -778,7 +786,6 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBoxItemDescription);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -804,7 +811,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBoxItemDescription;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
@@ -869,5 +875,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem doneToolStripMenuItem;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ComboBox textBoxItemDescription;
     }
 }

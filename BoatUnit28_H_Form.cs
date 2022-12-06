@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Configuration;
+using System.Data.SQLite;
 
 namespace Project_Product_List
 {
     public partial class BoatUnit28_H_Form : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+        string connectionString = Paths.Paths.UTC_SQL_CONNECTION_NEW;
 
         public BoatUnit28_H_Form()
         {
@@ -75,18 +68,26 @@ namespace Project_Product_List
         }
 
 
+        public void UpdateDataGrid()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM BOAT28", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
+            }
+        }
+
         private void RMA_BoatUnit_28_Form_Load(object sender, EventArgs e)
         {
-            Load_Customers_To_ComboBox();
+            UpdateDataGrid();
+            //Load_Customers_To_ComboBox();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Boat28_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
-            }
+
         }
 
 
@@ -101,14 +102,16 @@ namespace Project_Product_List
         {
             string productSerialNumber = textBoxSerialNumber.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Boat28_dt] where Seriel_Code LIKE '%" + productSerialNumber + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM BOAT28 where Seriel_Code LIKE '%" + productSerialNumber + "';", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
@@ -116,15 +119,15 @@ namespace Project_Product_List
         {
             string CustomerName = comboBoxCustomerName.Text.Trim();
 
-
-            
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Boat14_dt] where Customer_Name = '" + CustomerName + "';", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM BOAT28 where Customer_Name = '" + CustomerName + "';", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
@@ -140,39 +143,45 @@ namespace Project_Product_List
 
         public void Delete_from_boat28()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
             string deleteSN = textBox1.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM Boat28_dt WHERE Seriel_Code = '" + deleteSN + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM BOAT28 WHERE Seriel_Code = '" + deleteSN + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
+
+
             MessageBox.Show("Done !");
         }
 
-        public void UpdateDataGrid()
-        {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Boat28_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
-            }
-        }
 
         public void createExcelFile()
         {
@@ -233,7 +242,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\TEST HISTORY.docx";
+            pi.FileName = Paths.Paths.UDI_BOAT_28_HISTORY_HELP_FILE;
             p.StartInfo = pi;
 
             try

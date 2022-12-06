@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
@@ -75,7 +67,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Reports.docx";
+            pi.FileName = @"P:\Archive\HELP UTC TESTS\Reports.docx";
 
             p.StartInfo = pi;
 
@@ -91,7 +83,7 @@ namespace Project_Product_List
 
         private void Button8_Click(object sender, EventArgs e)
         {
-            new ProductionReports().Show();
+            new ProductionReportsHistory().Show();
             this.Hide();
         }
 

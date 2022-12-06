@@ -1,26 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Data.SqlServerCe;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Data.SQLite;
+using Dapper;
+using System.Configuration;
 
 namespace Project_Product_List
 {
     public partial class Waybill : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
 
         public Waybill()
         {
@@ -32,47 +26,35 @@ namespace Project_Product_List
             new Production_testingFORM().Show();
             this.Hide();
         }
+        
 
-        void Insert_ShipmentReceipt_Into_DataBase()
+        void InsertToDataBase()
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+
+
+            try
             {
-                sqlCon.Open();
-                SqlCommand sqlCmd = new SqlCommand("ShipmentReceipt_add", sqlCon);
-                sqlCmd.CommandType = CommandType.StoredProcedure;
-                sqlCmd.Parameters.AddWithValue("@ShipmentFrom", textBoxShipmentFrom.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@ShipmentTo", textBoxshipmentTo.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@ShipmentDate", dateTimePickerShipmentDate.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@WaybillNumber", textBoxWaybillNumber.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@ServiceType", textBoxServiceType.Text.Trim());
-
-
-                sqlCmd.Parameters.AddWithValue("@PackagingType", textBoxPackagingType.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@NumberOfPieces", textBoxNumberOfPieces.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@TotalWeight", textBoxTotalWeight.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@Dimensional", textBoxDimensional.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@Chareable", textBoxChareable.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@InsuredAmount", textBoxInsuredAmount.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@DHL_Account", textBoxDHLAccount.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@RefernceInformation", textBoxRefernceInformation.Text.Trim());
-
-
-                sqlCmd.Parameters.AddWithValue("@Reference", textBoxReference.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@DescriptionOfContents", textBoxDescriptionOfContents.Text.Trim());
-                sqlCmd.Parameters.AddWithValue("@COMMENT", textBoxCOMMENT.Text.Trim());
-
-
-                sqlCmd.ExecuteNonQuery();
-                sqlCon.Close();
+                using (IDbConnection cnn = new SQLiteConnection(General.LoadConnectionString()))
+                {
+                    cnn.Execute("insert into SHIPMENT_RECEIPT(ShipmentFrom, ShipmentTo, ShipmentDate, WaybillNumber, ServiceType, PackagingType, NumberOfPieces, TotalWeight, Dimensional, Chareable, InsuredAmount, DHL_Account, RefernceInformation, Reference, DescriptionOfContents, COMMENT) values ('" + textBoxShipmentFrom.Text.Trim() + "','" + textBoxshipmentTo.Text.Trim() + "','" + dateTimePickerShipmentDate.Text.Trim() + "','" + textBoxWaybillNumber.Text.Trim() + "','" + textBoxServiceType.Text.Trim() + "','" + textBoxPackagingType.Text.Trim() + "', '" + textBoxNumberOfPieces.Text.Trim() + "','" + textBoxTotalWeight.Text.Trim() + "','" + textBoxDimensional.Text.Trim() + "','" + textBoxChareable.Text.Trim() + "','" + textBoxInsuredAmount.Text.Trim() + "','" + textBoxDHLAccount.Text.Trim() + "', ,'" + textBoxRefernceInformation.Text.Trim() + "', '" + textBoxReference.Text.Trim() + "','" + textBoxDescriptionOfContents.Text.Trim() + "','" + textBoxCOMMENT.Text.Trim() + "')");
+                }
+               
+                MessageBox.Show("Done Successfully !");
 
             }
+            catch (SqlException ex)
+            {
+
+                Console.WriteLine(ex.ToString());
+            } 
+            
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             try
             {
-                Insert_ShipmentReceipt_Into_DataBase();
+                InsertToDataBase();
                 MessageBox.Show(" ShipmentReceipt successfully entered into database !");
                 ShipmentReceipt_to_pdf();
                 MessageBox.Show("Shipment Receipt PDF Successfully !");
@@ -87,13 +69,15 @@ namespace Project_Product_List
 
         public void UpdateDataGrid()
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM ShipmentReceipt_dt ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM SHIPMENT_RECEIPT", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
@@ -146,14 +130,37 @@ namespace Project_Product_List
         {
             string waybill = textBoxFilter.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ShipmentReceipt_dt] where WaybillNumber LIKE '%" + waybill + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT * FROM SHIPMENT_RECEIPT WHERE WaybillNumber LIKE '%" + waybill + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
@@ -190,7 +197,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Shipment Receipt.docx";
+            pi.FileName = @"P:\Archive\HELP UTC TESTS\Shipment Receipt.docx";
 
 
             p.StartInfo = pi;
@@ -418,7 +425,7 @@ namespace Project_Product_List
         {
             try
             {
-                Insert_ShipmentReceipt_Into_DataBase();
+                InsertToDataBase();
                 MessageBox.Show(" Shipment Receipt successfully entered into database !");
                 ShipmentReceipt_to_pdf();
                 MessageBox.Show("Shipment Receipt PDF Successfully created!");

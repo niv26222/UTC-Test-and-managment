@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -71,7 +63,8 @@ namespace Project_Product_List
 
         private void ChoosForm_H__Load(object sender, EventArgs e)
         {
-
+            //new UDI14_H_Form().Show();
+            this.Hide();
         }
         private string MyDirectory()
         {
@@ -84,7 +77,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+            pi.FileName = Paths.Paths.CHOOSE_FORM_HISTORY_HELP_FILE;
             p.StartInfo = pi;
 
             try
@@ -95,6 +88,12 @@ namespace Project_Product_List
             {
                 MessageBox.Show(Ex.Message);
             }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            new RMA_history().Show();
+            this.Hide();
         }
     }
 }

@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using System.Data.SqlServerCe;
 using System.IO;
 using System.Diagnostics;
 using System.Reflection;
-
-
+using System.Data.SQLite;
+using System.Configuration;
 
 namespace Project_Product_List
 {
@@ -31,534 +22,1019 @@ namespace Project_Product_List
         public void LOAD_SerialNumber_TO_ComboBox()
         {
 
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-
-
-            cmd.CommandText = "SELECT SerialNumber FROM Stock_products_dt";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SerialNumber FROM STOCK";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        textBoxSerialNumber.Items.Add(dr["SerialNumber"]);
+                    }
 
-                textBoxSerialNumber.Items.Add(Convert.ToString(reader[0]));
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-
-            sqlConnection1.Close();
         }
 
 
         public void restorecomboBoxProduct()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Product FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxProduct.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Product FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxProduct.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreAssemblyPersonName()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT AssemblyPersonName FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxAssemblyPersonName.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT AssemblyPersonName FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxAssemblyPersonName.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreCommunicationWithThePC()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT CommunicationWithThePC FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxCommunicationWithThePC.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT CommunicationWithThePC FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxCommunicationWithThePC.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreCircleVersion()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT CircleVersion FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxCircleVersion.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT CircleVersion FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxCircleVersion.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreSLAVEVersion()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SLAVEVersion FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxSLAVEVersion.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SLAVEVersion FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxSLAVEVersion.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreBOOTVersion()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT BOOTVersion FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxBOOTVersion.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT BOOTVersion FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxBOOTVersion.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreSoftwareVersion()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SoftwareVersion FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxSoftwareVersion.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SoftwareVersion FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxSoftwareVersion.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreResetMemory()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT ResetMemory FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxResetMemory.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT ResetMemory FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxResetMemory.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreDepthGaugeMbar()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT DepthGaugeMbar FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxDepthGauge_mbar.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT DepthGaugeMbar FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxDepthGauge_mbar.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
 
         public void restoreSubmergingCalibration()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SubmergingCalibration FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxSubmergingCalibration.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SubmergingCalibration FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxSubmergingCalibration.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreSystemCalibration()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SystemCalibration FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxSystemCalibration.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SystemCalibration FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxSystemCalibration.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreCustomer()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Customer FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxCustomer.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Customer FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxCustomer.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreTest1()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Test1 FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxTest_1.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Test1 FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxTest_1.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreFirstTremor()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT FirstTremor FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxFirstTremor.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT FirstTremor FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxFirstTremor.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreFirstSubmerging()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT FirstSubmerging FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxFirstSubmerging.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT FirstSubmerging FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxFirstSubmerging.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreTest2()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Test2 FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxTest_2.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Test2 FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxTest_2.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreSecondTremor()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SecondTremor FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxsecondTremor.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SecondTremor FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxsecondTremor.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreSecondSubmerging()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT SecondSubmerging FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxsecondSubmerging.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT SecondSubmerging FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxsecondSubmerging.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreTest3()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Test3 FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxTest_3.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Test3 FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxTest_3.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreThirdTremor()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT ThirdTremor FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxThirdTremor.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT ThirdTremor FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxThirdTremor.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreThirdSubmerging()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT ThirdSubmerging FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxThirdSubmerging.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT ThirdSubmerging FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxThirdSubmerging.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreTest4()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Test4 FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxTest4.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Test4 FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        comboBoxTest4.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreCompletionDateOfTests()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT CompletionDateOfTests FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                dateTimePicker1.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT CompletionDateOfTests FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        dateTimePicker1.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void restoreComment()
         {
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
             string SerialNumber = textBoxSerialNumber.Text.Trim();
 
-            SqlConnection con = new SqlConnection();
-            con.ConnectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-            con.Open();
 
-            SqlCommand cmd = new SqlCommand();
-            cmd.CommandText = "SELECT Comment FROM Stock_products_dt WHERE SerialNumber = '" + SerialNumber + "';";
-            cmd.Connection = con;
-
-            SqlDataReader rd = cmd.ExecuteReader();
-
-            while (rd.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                textBoxComment.Text = rd[0].ToString();
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Comment FROM STOCK WHERE Serial_Number = '" + SerialNumber + "';";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+
+
+                    string customer_address = cmd.CommandText.ToString();
+
+                    while (dr.Read())
+                    {
+                        textBoxComment.Text = Convert.ToString(dr[0]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
-            con.Close();
+
+
+
+
+
         }
 
         public void Restore_data_from_temporary_data_base()
@@ -617,25 +1093,37 @@ namespace Project_Product_List
 
         public void Delete_Product_From_DataBase()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
             string StockSerialNumber = textBoxSerialNumber.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM Stock_products_dt WHERE serialNumber = '" + StockSerialNumber + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
-            }
+                try
+                {
 
-            sqlConnection1.Close();
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM STOCK WHERE Serial_Number = '" + StockSerialNumber + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
         void clearFieldsAfterDone()
@@ -678,7 +1166,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+            pi.FileName = @"P:\Archive\HELP UTC TESTS\Help.docx";
             p.StartInfo = pi;
 
             try

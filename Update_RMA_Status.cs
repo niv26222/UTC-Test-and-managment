@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
-
+using System.Data.SQLite;
+using System.Configuration;
 
 namespace Project_Product_List
 {
@@ -28,52 +19,78 @@ namespace Project_Product_List
         void updateStatusOf_RMA_BySerialNumber()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string RMANumber = textBoxUpdateStatus.Text.Trim();
-
-            cmd.CommandText = "UPDATE RMA_dt SET isArrived = '" + 1 + "'  WHERE SerialNumber1 = '" + RMANumber + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
+            string SerialNumber = textBoxUpdateStatus.Text.Trim();
 
 
-            sqlConnection1.Open();
 
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(LoadConnectionString()))
             {
-                reader.Read();
-            }
+                try
+                {
 
-            sqlConnection1.Close();
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET isArrived = '" + 1 + "'  WHERE SerialNumber1 = '" + SerialNumber + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
 
         void updateStatusOf_RMA_By_RMANumber()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
             string RMANumber = textBoxUpdateStatus.Text.Trim();
 
-            cmd.CommandText = "UPDATE RMA_dt SET isArrived = '" + 1 + "'  WHERE RMA_Number = '" + RMANumber + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
 
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(LoadConnectionString()))
             {
-                reader.Read();
-            }
+                try
+                {
 
-            sqlConnection1.Close();
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET isArrived = '" + 1 + "'  WHERE RMA_Number = '" + RMANumber + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
 
@@ -96,30 +113,47 @@ namespace Project_Product_List
         {
 
         }
-
+        private static string LoadConnectionString(string id = "Default")
+        {
+            return ConfigurationManager.ConnectionStrings[id].ConnectionString;
+        }
         void updateStatus()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
             string RMANumber = textBoxUpdateStatus.Text.Trim();
 
-            cmd.CommandText = "UPDATE RMA_dt SET isArrived = '" + 1 + "'  WHERE SerialNumber1 = '" + RMANumber + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
 
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET isArrived = '" + 1 + "'  WHERE SerialNumber1 = '" + RMANumber + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
             MessageBox.Show("Done !");
         }
 
@@ -127,6 +161,11 @@ namespace Project_Product_List
         {
             new Reports().Show();
             this.Hide();
+        }
+
+        private void Update_RMA_Status_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

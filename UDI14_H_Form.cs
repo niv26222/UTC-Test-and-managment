@@ -1,55 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Configuration;
+using Dapper;
+using System.Data.SQLite;
 
 namespace Project_Product_List
 {
     public partial class UDI14_H_Form : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
-
-        String strConnection = Properties.Settings.Default.BooksConnectionString;
 
 
         void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string CustomerName = comboBoxCustomerName.Text.Trim();
-
-            cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxCustomerName.Items.Add(Convert.ToString(reader[0]));
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomerName.Items.Add(dr["Name"]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
             }
-
-            sqlConnection1.Close();
-
         }
+
+
+
 
 
         public UDI14_H_Form()
@@ -69,27 +68,47 @@ namespace Project_Product_List
         }
         public void Delete_from_udi14()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+
             string deleteSN = textBox1.Text.Trim();
+            
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            cmd.CommandText = "DELETE FROM Udi14_dt WHERE Seriel_Code = '" + deleteSN + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM UDI14 WHERE Seriel_Code = '" + deleteSN + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
+
+
             MessageBox.Show("Done !");
         }
+
+
 
 
         private void RMA_UDI_14_Form1_Load(object sender, EventArgs e)
@@ -104,16 +123,15 @@ namespace Project_Product_List
             string productSerialNumber = textBoxSerialNumber.Text.Trim();
 
 
-
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
 
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Udi14_dt] where Seriel_Code LIKE '%" + productSerialNumber +"';", sqlCon);
-
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM UDI14 where Seriel_Code LIKE '%" + productSerialNumber + "';", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
 
         }
@@ -121,28 +139,34 @@ namespace Project_Product_List
         private void button5_Click(object sender, EventArgs e)
         {
             string CustomerName = comboBoxCustomerName.Text.Trim();
-
-
-
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+        
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Udi14_dt] where Customer_Name = '" + CustomerName + "';", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM UDI14 where Customer_Name = '" + CustomerName + "';", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
+
         }
+
+
 
         public void UpdateDataGrid()
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Udi14_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM UDI14", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
 
@@ -205,7 +229,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\TEST HISTORY.docx";
+            pi.FileName = Paths.Paths.UDI_14_HISTORY_HELP_FILE;
 
             p.StartInfo = pi;
 
@@ -230,6 +254,11 @@ namespace Project_Product_List
         }
 
         private void ComboBoxCustomerName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
         {
 
         }

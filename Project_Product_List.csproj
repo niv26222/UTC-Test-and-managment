@@ -12,6 +12,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>C:\Users\NivBE\Desktop\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -68,6 +70,9 @@
   <ItemGroup>
     <Reference Include="CircularProgressBar, Version=2.5.6403.13419, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CircularProgressBar.2.5.6403.13419\lib\net35-client\CircularProgressBar.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.CV.DebuggerVisualizers.VS2012">
       <HintPath>..\..\..\..\..\Emgu\emgucv-windesktop 3.4.1.2976\bin\Emgu.CV.DebuggerVisualizers.VS2012.dll</HintPath>
@@ -145,12 +150,19 @@
       <HintPath>..\..\..\..\Desktop\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.115.5, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.SqlServerCe">
       <HintPath>..\..\..\..\Desktop\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Messaging" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -201,12 +213,18 @@
     <Compile Include="CircularButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Paths\Paths.cs" />
     <Compile Include="Customers_List.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Customers_List.Designer.cs">
       <DependentUpon>Customers_List.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EOY_Report.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EOY_Report.Designer.cs">
+      <DependentUpon>EOY_Report.cs</DependentUpon>
     </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -226,6 +244,7 @@
     <Compile Include="frmYesNo.Designer.cs">
       <DependentUpon>frmYesNo.cs</DependentUpon>
     </Compile>
+    <Compile Include="General.cs" />
     <Compile Include="genericFunctions.cs" />
     <Compile Include="Interface1.cs" />
     <Compile Include="Invoices_FORM.cs">
@@ -418,24 +437,6 @@
     <Compile Include="UdiBoatUnit28Form.Designer.cs">
       <DependentUpon>UdiBoatUnit28Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="UFLS100_InspectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UFLS100_InspectionForm.Designer.cs">
-      <DependentUpon>UFLS100_InspectionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UFLS200_InspectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UFLS200_InspectionForm.Designer.cs">
-      <DependentUpon>UFLS200_InspectionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UFLS400_InspectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UFLS400_InspectionForm.Designer.cs">
-      <DependentUpon>UFLS400_InspectionForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Update_RMA_Status.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -459,6 +460,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Customers_List.resx">
       <DependentUpon>Customers_List.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EOY_Report.resx">
+      <DependentUpon>EOY_Report.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -572,18 +576,12 @@
     <EmbeddedResource Include="UdiBoatUnit28Form.resx">
       <DependentUpon>UdiBoatUnit28Form.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UFLS100_InspectionForm.resx">
-      <DependentUpon>UFLS100_InspectionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UFLS200_InspectionForm.resx">
-      <DependentUpon>UFLS200_InspectionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UFLS400_InspectionForm.resx">
-      <DependentUpon>UFLS400_InspectionForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Update_RMA_Status.resx">
       <DependentUpon>Update_RMA_Status.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="DataBase.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -656,4 +654,11 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.115.5\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+  </Target>
 </Project>

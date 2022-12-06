@@ -45,6 +45,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.excelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
@@ -204,7 +205,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.excelToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.helpToolStripMenuItem,
+            this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1405, 24);
@@ -224,6 +226,13 @@
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(87, 20);
+            this.toolStripMenuItem1.Text = "EOY REPORT";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // panel1
             // 
@@ -263,6 +272,7 @@
             this.textBoxSerialNumber.Name = "textBoxSerialNumber";
             this.textBoxSerialNumber.Size = new System.Drawing.Size(190, 23);
             this.textBoxSerialNumber.TabIndex = 94;
+            this.textBoxSerialNumber.TextChanged += new System.EventHandler(this.textBoxSerialNumber_TextChanged_1);
             // 
             // label6
             // 
@@ -274,6 +284,7 @@
             this.label6.Size = new System.Drawing.Size(423, 124);
             this.label6.TabIndex = 384;
             this.label6.Text = "Search";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // buttonUpdateStatus
             // 
@@ -450,5 +461,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

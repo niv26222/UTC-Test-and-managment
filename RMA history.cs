@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Configuration;
+using System.Data.SQLite;
 
 namespace Project_Product_List
 {
 
     public partial class RMA_history : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+        string connectionString = Paths.Paths.UTC_SQL_CONNECTION_NEW;
 
         public RMA_history()
         {
@@ -33,131 +26,106 @@ namespace Project_Product_List
             this.Hide();
         }
 
-        public void Load_Customers_To_ComboBox()
+        void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            try
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
-                string CustomerName = comboBoxCustomerName.Text.Trim();
-
-                cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                try
                 {
-                    comboBoxCustomerName.Items.Add(Convert.ToString(reader[0]));
-                }
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomerName.Items.Add(dr["Name"]);
+                    }
 
-                sqlConnection1.Close();
-            }
-            catch (SqlException ex)
-            {
-
-                Console.WriteLine(ex.ToString());
-            }
-
-
-        }
-
-        public void fillDataGrid()
-        {
-
-            try
-            {
-                using (SqlConnection sqlCon = new SqlConnection(connectionString))
-                {
-
-                    sqlCon.Open();
-                    SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [RMA_dt] ; ", sqlCon);
-                    DataTable dtbl = new DataTable();
-                    sqlDa.Fill(dtbl);
-                    dataGridView1.DataSource = dtbl;
-
-                    //foreach (DataGridViewRow row in dataGridView1.Rows)
-                    //{
-                    //    row.DefaultCellStyle.BackColor = Color.CornflowerBlue;
-                    //}
-                    sqlCon.Close(); 
-
+                    dr.Close();
+                    conn.Close();
 
                 }
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
 
+            }
         }
+
 
         public void LOAD_RMA_NUMBERS_TO_COMBO_BOX()
         {
-            /////load the names to combobox
 
-            try
-            {
-                SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
+                /////load the names to combobox
+                SQLiteCommand cmd;
+                SQLiteDataReader dr;
 
-                cmd.CommandText = "SELECT RMA_Number FROM[RMA_dt] WHERE isArrived = '" + 0 + "'; ";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
                 {
-                    comboBoxUpdateStatusByRMANumber.Items.Add(Convert.ToString(reader[0]));
+                    try
+                    {
+                        cmd = new SQLiteCommand();
+                        cmd.CommandText = "SELECT RMA_Number FROM RMA WHERE isArrived = '" + 0 + "'; ";
+                        cmd.Connection = conn;
+                        conn.Open();
+                        dr = cmd.ExecuteReader();
+                        while (dr.Read())
+                        {
+                            comboBoxCustomerName.Items.Add(dr["RMA_Number"]);
+                        }
+
+                        dr.Close();
+                        conn.Close();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+
                 }
-
-                sqlConnection1.Close();
-            }
-            catch (Exception Ex)
-            {
-                MessageBox.Show(Ex.Message);
-            }
-
         }
 
 
         public void LOAD_SERIAL_NUMBERS_TO_COMBO_BOX()
         {
-            /////load the S/N to combobox
-
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
 
 
-            // "UPDATE RMA_dt SET isArrived = '" + 1 + "'  WHERE RMA_Number = '" + RMANumber + "'; ";
-            cmd.CommandText = "SELECT SerialNumber1 FROM[RMA_dt] WHERE isArrived = '" + 0 + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+                /////load the names to combobox
+                SQLiteCommand cmd;
+                SQLiteDataReader dr;
 
+                using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+                {
+                    try
+                    {
+                        cmd = new SQLiteCommand();
+                        cmd.CommandText = "SELECT SerialNumber1 FROM RMA WHERE isArrived = '" + 0 + "'; ";
+                        cmd.Connection = conn;
+                        conn.Open();
+                        dr = cmd.ExecuteReader();
+                        while (dr.Read())
+                        {
+                            comboBoxCustomerName.Items.Add(dr["SerialNumber1"]);
+                        }
 
-            sqlConnection1.Open();
+                        dr.Close();
+                        conn.Close();
 
-            reader = cmd.ExecuteReader();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
 
-            while (reader.Read())
-            {
-                comboBoxUpdateStatus.Items.Add(Convert.ToString(reader[0]));
-            }
-
-            sqlConnection1.Close();
+                }
+            
         }
 
         public void complete_the_Serial_Number_from_the_RMA_combo_box()
@@ -207,9 +175,23 @@ namespace Project_Product_List
             LOAD_SERIAL_NUMBERS_TO_COMBO_BOX();
             LOAD_RMA_NUMBERS_TO_COMBO_BOX();
             Load_Customers_To_ComboBox();
-            fillDataGrid();
+            UpdateDataGrid();
+        }
 
+      
 
+        public void UpdateDataGrid()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM RMA", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
+            }
         }
 
         private void comboBoxCustomerName_SelectedIndexChanged(object sender, EventArgs e)
@@ -223,55 +205,81 @@ namespace Project_Product_List
 
 
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+
+            string RMA_SN = textBoxSerialNumber.Text.Trim();
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [RMA_dt] where Customer_Name = '" + CustomerName + "';", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM RMA WHERE Customer_Name  = '" + CustomerName + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
+
+            
+
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             string RMA_number = textBoxRMANumber.Text.Trim();
 
-
-
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [RMA_dt] where RMA_Number LIKE '%" + RMA_number + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM RMA WHERE Name = '" + RMA_number + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
+            
         }
 
         public void Delete_from_RMA()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+
             string deleteRMAnumber = comboBoxDelete.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM RMA_dt WHERE RMA_Number = '" + deleteRMAnumber + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM RMA WHERE RMA_Number = '" + deleteRMAnumber + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
-            
         }
 
         public void createExcelFile()
@@ -347,7 +355,7 @@ namespace Project_Product_List
                     Delete_from_RMA_Directory();
                     Delete_from_RMA();
                     MessageBox.Show("Delete Successfully !");
-                    fillDataGrid();
+                    UpdateDataGrid();
 
                 }
             }
@@ -380,102 +388,166 @@ namespace Project_Product_List
         void updateStatusOf_RMA_BySerialNumber()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string RMANumber = comboBoxUpdateStatus.Text.Trim();
-
-            cmd.CommandText = "UPDATE RMA_dt SET isArrived = '" + 1 + "'  WHERE SerialNumber1 = '" + RMANumber + "' and isArrived = '" + 0 + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
 
 
-            sqlConnection1.Open();
+            string RMANumber = comboBoxUpdateStatusByRMANumber.Text.Trim();
 
-            reader = cmd.ExecuteReader();
 
-            if (reader.Read())
+
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET isArrived = '" + 1 + "'  WHERE SerialNumber1 = '" + RMANumber + "' and isArrived = '" + 0 + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
         }
 
         void updateStatusOf_RMA_By_RMANumber()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
             string RMANumber = comboBoxUpdateStatusByRMANumber.Text.Trim();
 
-            cmd.CommandText = "UPDATE RMA_dt SET isArrived = '" + 1 + "'  WHERE RMA_Number = '" + RMANumber + "' and isArrived = '" + 0 + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
 
 
-            sqlConnection1.Open();
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET isArrived = '" + 1 + "'  WHERE RMA_Number = '" + RMANumber + "' and isArrived = '" + 0 + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
         }
 
 
         void updateStatusOf_RMA_By_RMANumber_Undo()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
             string RMANumber = comboBoxUpdateStatusByRMANumber.Text.Trim();
+            
 
-            cmd.CommandText = "UPDATE RMA_dt SET isArrived = '" + 0 + "'  WHERE RMA_Number = '" + RMANumber + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET isArrived = '" + 0 + "'  WHERE RMA_Number = '" + RMANumber + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
         }
 
         void updateStatusOf_RMA_BySerialNumber_Undo()
         {
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
             string RMANumber = comboBoxUpdateStatus.Text.Trim();
+            
 
-            cmd.CommandText = "UPDATE RMA_dt SET isArrived = '" + 0 + "'  WHERE SerialNumber1 = '" + RMANumber + "'; ";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "UPDATE RMA SET isArrived = '" + 0 + "'  WHERE SerialNumber1 = '" + RMANumber + "'; ";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
         }
 
 
@@ -491,7 +563,8 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\RMA History.docx";
+            pi.FileName = Paths.Paths.RMA_HISTORY_HELP_FILE;
+
             p.StartInfo = pi;
 
             try
@@ -513,15 +586,18 @@ namespace Project_Product_List
         {
             string RMA_SN = textBoxSerialNumber.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [RMA_dt] where SerialNumber1 LIKE '%" + RMA_SN + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM RMA WHERE SerialNumber1 LIKE '%" + RMA_SN + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+            
+
         }
 
 
@@ -534,7 +610,7 @@ namespace Project_Product_List
                 {
                     updateStatusOf_RMA_BySerialNumber();
                     MessageBox.Show("Successfully Done !");
-                    fillDataGrid();
+                    UpdateDataGrid();
                     comboBoxUpdateStatus.Items.Clear();
                     comboBoxUpdateStatusByRMANumber.Items.Clear();
                     LOAD_SERIAL_NUMBERS_TO_COMBO_BOX();
@@ -560,7 +636,7 @@ namespace Project_Product_List
                 {
                     updateStatusOf_RMA_By_RMANumber();
                     MessageBox.Show("Successfully Done !");
-                    fillDataGrid();
+                    UpdateDataGrid();
                     comboBoxUpdateStatusByRMANumber.Items.Clear();
                     comboBoxUpdateStatus.Items.Clear();
                     LOAD_SERIAL_NUMBERS_TO_COMBO_BOX();
@@ -588,7 +664,7 @@ namespace Project_Product_List
                 {
                     updateStatusOf_RMA_By_RMANumber_Undo();
                     MessageBox.Show("Done !");
-                    fillDataGrid();
+                    UpdateDataGrid();
                     LOAD_SERIAL_NUMBERS_TO_COMBO_BOX();
                     LOAD_RMA_NUMBERS_TO_COMBO_BOX();
                 }
@@ -607,7 +683,7 @@ namespace Project_Product_List
                 {
                     updateStatusOf_RMA_BySerialNumber_Undo();
                     MessageBox.Show("Done !");
-                    fillDataGrid();
+                    UpdateDataGrid();
                     LOAD_SERIAL_NUMBERS_TO_COMBO_BOX();
                     LOAD_RMA_NUMBERS_TO_COMBO_BOX();
                 }
@@ -625,9 +701,83 @@ namespace Project_Product_List
             
         }
 
+        public void EOYReport()
+        {
+            //dataGridView1.Rows.Add();
+            saveFileDialog1.InitialDirectory = "Desktop";
+            saveFileDialog1.Title = "Save as Excel File";
+            saveFileDialog1.FileName = "";
+            saveFileDialog1.Filter = "Excel Files(2003)|*.xlsx|Excel Files(2007)|*.xlsx |Excel Files(2013)|*.xlsx";
+            if (saveFileDialog1.ShowDialog() != DialogResult.Cancel)
+            {
+                Microsoft.Office.Interop.Excel.Application ExcelApp = new Microsoft.Office.Interop.Excel.Application();
+                ExcelApp.Application.Workbooks.Add(Type.Missing);
+                //change properties of the work Book
+                ExcelApp.Columns.ColumnWidth = 30;
+
+                //Storing header part in Excel
+
+                for (int i = 1; i < dataGridView1.Columns.Count + 1; i++)
+                {
+                    ExcelApp.Cells[1, i] = dataGridView1.Columns[i - 1].HeaderText;
+                    ExcelApp.Cells[1, i].EntireRow.Font.Bold = true;
+
+                }
+
+
+                //Storing each row and coloumn value to excel sheet
+
+                for (int i = 0; i < dataGridView1.RowCount - 1; i++)
+                {
+                    for (int j = 0; j < dataGridView1.Columns.Count; j++)
+                    {
+                        ExcelApp.Cells[i + 2, j + 1] = dataGridView1.Rows[i].Cells[j].Value.ToString();
+                    }
+                }
+                ExcelApp.ActiveWorkbook.SaveCopyAs(saveFileDialog1.FileName.ToString());
+                ExcelApp.ActiveWorkbook.Saved = true;
+                ExcelApp.Quit();
+                MessageBox.Show("Excel File Create Successfully !");
+            }
+        }
+
         private void comboBoxUpdateStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
             complete_the_RMA_NUMBER_from_the_Serial_Number_COMBO_box();
+        }
+
+
+
+        private void filterWarrantyRMAs()
+        {
+            string yes = "Yes";
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM RMA", conn); //"SELECT * FROM RMA Where Warranty =  '" + yes + "'", conn
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
+            }
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+            filterWarrantyRMAs();
+            EOYReport();
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxSerialNumber_TextChanged_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

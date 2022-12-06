@@ -97,6 +97,8 @@
             this.textBoxDescription1 = new System.Windows.Forms.ComboBox();
             this.textBoxCustomerComplaint1 = new System.Windows.Forms.ComboBox();
             this.textBoxName = new System.Windows.Forms.ComboBox();
+            this.label39 = new System.Windows.Forms.Label();
+            this.comboBoxUnderWarranty = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -160,9 +162,9 @@
             this.label4.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
             this.label4.Location = new System.Drawing.Point(21, 128);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(128, 16);
+            this.label4.Size = new System.Drawing.Size(142, 16);
             this.label4.TabIndex = 5;
-            this.label4.Text = "Omer, Israel 84965.";
+            this.label4.Text = "Omer, Israel 8496500.";
             // 
             // label5
             // 
@@ -521,6 +523,7 @@
             this.textBoxSignature.Name = "textBoxSignature";
             this.textBoxSignature.Size = new System.Drawing.Size(175, 22);
             this.textBoxSignature.TabIndex = 53;
+            this.textBoxSignature.TextChanged += new System.EventHandler(this.textBoxSignature_TextChanged);
             // 
             // label24
             // 
@@ -652,7 +655,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1405, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1472, 24);
             this.menuStrip1.TabIndex = 67;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -684,7 +687,7 @@
             // checkBoxArrived
             // 
             this.checkBoxArrived.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
-            this.checkBoxArrived.Location = new System.Drawing.Point(1266, 598);
+            this.checkBoxArrived.Location = new System.Drawing.Point(1268, 601);
             this.checkBoxArrived.Name = "checkBoxArrived";
             this.checkBoxArrived.Padding = new System.Windows.Forms.Padding(3);
             this.checkBoxArrived.Size = new System.Drawing.Size(36, 33);
@@ -695,7 +698,7 @@
             // 
             this.label37.AutoSize = true;
             this.label37.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label37.Location = new System.Drawing.Point(1263, 579);
+            this.label37.Location = new System.Drawing.Point(1250, 578);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(54, 20);
             this.label37.TabIndex = 571;
@@ -705,7 +708,7 @@
             // 
             this.label38.AutoSize = true;
             this.label38.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label38.Location = new System.Drawing.Point(1324, 579);
+            this.label38.Location = new System.Drawing.Point(1310, 579);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(42, 20);
             this.label38.TabIndex = 572;
@@ -714,7 +717,7 @@
             // checkBoxFixed
             // 
             this.checkBoxFixed.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
-            this.checkBoxFixed.Location = new System.Drawing.Point(1328, 598);
+            this.checkBoxFixed.Location = new System.Drawing.Point(1314, 602);
             this.checkBoxFixed.Name = "checkBoxFixed";
             this.checkBoxFixed.Padding = new System.Windows.Forms.Padding(3);
             this.checkBoxFixed.Size = new System.Drawing.Size(36, 33);
@@ -765,6 +768,7 @@
             "General",
             "Maintenance",
             "Network problems",
+            "Opacity",
             "Software problems"});
             this.textBoxCustomerComplaint1.Location = new System.Drawing.Point(860, 607);
             this.textBoxCustomerComplaint1.Name = "textBoxCustomerComplaint1";
@@ -786,12 +790,37 @@
             this.textBoxName.TabIndex = 577;
             this.textBoxName.SelectedIndexChanged += new System.EventHandler(this.textBoxName_SelectedIndexChanged);
             // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label39.Location = new System.Drawing.Point(1354, 578);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(109, 20);
+            this.label39.TabIndex = 579;
+            this.label39.Text = "Under warranty?";
+            // 
+            // comboBoxUnderWarranty
+            // 
+            this.comboBoxUnderWarranty.Font = new System.Drawing.Font("Arial Narrow", 9.75F, System.Drawing.FontStyle.Bold);
+            this.comboBoxUnderWarranty.FormattingEnabled = true;
+            this.comboBoxUnderWarranty.Items.AddRange(new object[] {
+            "No",
+            "Yes"});
+            this.comboBoxUnderWarranty.Location = new System.Drawing.Point(1358, 606);
+            this.comboBoxUnderWarranty.Name = "comboBoxUnderWarranty";
+            this.comboBoxUnderWarranty.Size = new System.Drawing.Size(68, 24);
+            this.comboBoxUnderWarranty.Sorted = true;
+            this.comboBoxUnderWarranty.TabIndex = 580;
+            // 
             // RMA_FORM
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1405, 752);
+            this.ClientSize = new System.Drawing.Size(1472, 752);
+            this.Controls.Add(this.comboBoxUnderWarranty);
+            this.Controls.Add(this.label39);
             this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.textBoxCustomerComplaint1);
             this.Controls.Add(this.textBoxDescription1);
@@ -938,5 +967,7 @@
         private System.Windows.Forms.ComboBox textBoxDescription1;
         private System.Windows.Forms.ComboBox textBoxCustomerComplaint1;
         private System.Windows.Forms.ComboBox textBoxName;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.ComboBox comboBoxUnderWarranty;
     }
 }

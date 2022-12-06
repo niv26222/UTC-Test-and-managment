@@ -89,6 +89,7 @@
             this.Name = "AdminOptionsEntry";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Admin Options Entry";
+            this.Load += new System.EventHandler(this.AdminOptionsEntry_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

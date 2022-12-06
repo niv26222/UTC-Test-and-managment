@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
-using MySql.Data.MySqlClient;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
+using System.Configuration;
+using System.Data.SQLite;
 
 namespace Project_Product_List
 {
     public partial class SERVICE_FORM_HISTORY : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+        string connectionString = Paths.Paths.UTC_SQL_CONNECTION_NEW;
 
         public SERVICE_FORM_HISTORY()
         {
@@ -27,32 +20,37 @@ namespace Project_Product_List
         }
 
 
-        public void Load_Customers_To_ComboBox()
+        void Load_Customers_To_ComboBox()
         {
             /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader dr;
 
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
-            string CustomerName = comboBoxCustomerName.Text.Trim();
-
-            cmd.CommandText = "SELECT Customer_name FROM[Customers_dt]";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                comboBoxCustomerName.Items.Add(Convert.ToString(reader[0]));
+                try
+                {
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "SELECT Name FROM CUSTOMER";
+                    cmd.Connection = conn;
+                    conn.Open();
+                    dr = cmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        comboBoxCustomerName.Items.Add(dr["Name"]);
+                    }
+
+                    dr.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
             }
-
-            sqlConnection1.Close();
         }
-
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -85,36 +83,37 @@ namespace Project_Product_List
 
         public void LOAD_RMA_NUMBERS_TO_COMBO_BOX()
         {
-            /////load the names to combobox
 
 
-            try
-            {
-                SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-                SqlCommand cmd = new SqlCommand();
-                SqlDataReader reader;
+                /////load the names to combobox
+                SQLiteCommand cmd;
+                SQLiteDataReader dr;
 
-                cmd.CommandText = "SELECT RMA_Number FROM[RMA_dt]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = sqlConnection1;
-
-
-                sqlConnection1.Open();
-
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
+                using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
                 {
-                    comboBox1.Items.Add(Convert.ToString(reader[0]));
+                    try
+                    {
+                        cmd = new SQLiteCommand();
+                        cmd.CommandText = "SELECT RMA_Number FROM RMA";
+                        cmd.Connection = conn;
+                        conn.Open();
+                        dr = cmd.ExecuteReader();
+                        while (dr.Read())
+                        {
+                            comboBox1.Items.Add(dr["RMA_Number"]);
+                        }
+
+                        dr.Close();
+                        conn.Close();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+
                 }
-
-                sqlConnection1.Close();
-            }
-            catch (SqlException ex)
-            {
-
-                Console.WriteLine(ex.ToString());
-            }
+            
 
 
 
@@ -124,78 +123,110 @@ namespace Project_Product_List
         {
             LOAD_RMA_NUMBERS_TO_COMBO_BOX();
             Load_Customers_To_ComboBox();
-            fillDataGrig();
+            UpdateDataGrid();
 
         }
+
+
+        public void UpdateDataGrid()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM SERVICE_FORM", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
+            }
+        }
+
+
+
+
 
         private void button4_Click(object sender, EventArgs e)
         {
 
             string RMA_NUMBER = textBoxSerialNumber.Text.Trim();
 
-
-
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ServiceForm_dt] where RMA LIKE '%" + RMA_NUMBER + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM SERVICE_FORM WHERE RMA LIKE '%" + RMA_NUMBER + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
+            
+
+
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             string Customer_name = comboBoxCustomerName.Text.Trim();
 
-
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ServiceForm_dt] where SOLD_TO = '" + Customer_name + "';", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM SERVICE_FORM WHERE SOLD_TO  = '" + Customer_name + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
+
+            
+
         }
 
 
-        public void fillDataGrid()
-        {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [ServiceForm_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
-            }
-        }
 
         public void Delete_from_ServiceForm()
         {
-            SqlConnection sqlConnection1 = new SqlConnection(connectionString);
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader;
+
             string deleteRMAnumber = comboBox1.Text.Trim();
 
-            cmd.CommandText = "DELETE FROM ServiceForm_dt WHERE RMA = '" + deleteRMAnumber + "';";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
+            /////load the names to combobox
+            SQLiteCommand cmd;
+            SQLiteDataReader reader;
 
-            sqlConnection1.Open();
-
-            reader = cmd.ExecuteReader();
-
-            if (reader.Read())
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                reader.Read();
+                try
+                {
+
+                    cmd = new SQLiteCommand();
+                    cmd.CommandText = "DELETE FROM SERVICE_FORM WHERE Name = '" + deleteRMAnumber + "';";
+                    cmd.CommandType = CommandType.Text;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        reader.Read();
+                    }
+
+                    reader.Close();
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
 
-            sqlConnection1.Close();
-            
         }
 
 
@@ -223,7 +254,7 @@ namespace Project_Product_List
             Delete_from_ServiceForm_from_Directory();
             Delete_from_ServiceForm();
             MessageBox.Show("Delete Successfully !");
-            fillDataGrid();
+            UpdateDataGrid();
         }
 
         public void createExcelFile()
@@ -279,7 +310,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName =MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+            pi.FileName = Paths.Paths.SERVICE_FORM_HISTORY_HELP_FILE;
             p.StartInfo = pi;
 
             try
@@ -295,6 +326,100 @@ namespace Project_Product_List
         private void excelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             createExcelFile();
+        }
+
+        private void filterWarrantyServiceForm()
+        {
+            //string yes = "Yes";
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM SERVICE_FORM", conn); //"SELECT * FROM RMA Where Warranty =  '" + yes + "'", conn
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
+            }
+        }
+
+        public void EOYReport()
+        {
+            //dataGridView1.Rows.Add();
+            saveFileDialog1.InitialDirectory = "Desktop";
+            saveFileDialog1.Title = "Save as Excel File";
+            saveFileDialog1.FileName = "";
+            saveFileDialog1.Filter = "Excel Files(2003)|*.xlsx|Excel Files(2007)|*.xlsx |Excel Files(2013)|*.xlsx";
+            if (saveFileDialog1.ShowDialog() != DialogResult.Cancel)
+            {
+                Microsoft.Office.Interop.Excel.Application ExcelApp = new Microsoft.Office.Interop.Excel.Application();
+                ExcelApp.Application.Workbooks.Add(Type.Missing);
+                //change properties of the work Book
+                ExcelApp.Columns.ColumnWidth = 30;
+
+                //Storing header part in Excel
+
+                for (int i = 1; i < dataGridView1.Columns.Count + 1; i++)
+                {
+                    ExcelApp.Cells[1, i] = dataGridView1.Columns[i - 1].HeaderText;
+                    ExcelApp.Cells[1, i].EntireRow.Font.Bold = true;
+
+                }
+
+
+                //Storing each row and coloumn value to excel sheet
+
+                for (int i = 0; i < dataGridView1.RowCount - 1; i++)
+                {
+                    for (int j = 0; j < dataGridView1.Columns.Count; j++)
+                    {
+                        ExcelApp.Cells[i + 2, j + 1] = dataGridView1.Rows[i].Cells[j].Value.ToString();
+                    }
+                }
+                ExcelApp.ActiveWorkbook.SaveCopyAs(saveFileDialog1.FileName.ToString());
+                ExcelApp.ActiveWorkbook.Saved = true;
+                ExcelApp.Quit();
+                MessageBox.Show("Excel File Create Successfully !");
+            }
+        }
+
+        private void eOYREPORTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            filterWarrantyServiceForm();
+            EOYReport();
+        }
+
+
+        public static DateTime ConvertFromUnixTimestamp(double start, long end)
+        {
+            DateTime origin = new DateTime(end, DateTimeKind.Utc);
+            return origin.AddSeconds(start);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+
+            string startDate = dateTimePickerStart.Text;
+            string endtDate = dateTimePickerEnd.Text;
+
+
+            var parsedStartDate = DateTime.Parse(startDate).ToString("dd-MM-yyyy");
+
+            var parseEnddDate = DateTime.Parse(endtDate).ToString("dd-MM-yyyy");
+
+
+
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * from SERVICE_FORM WHERE SERVICE_DATE >= '" + parsedStartDate + "' AND SERVICE_DATE <='" + parseEnddDate + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
+            }
+            
         }
     }
 }

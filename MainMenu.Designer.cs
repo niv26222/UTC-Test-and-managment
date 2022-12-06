@@ -42,9 +42,9 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.learnMoreAboutOurProductsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label7 = new System.Windows.Forms.Label();
@@ -58,6 +58,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.buttonAdminOptions = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.button11 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -147,7 +148,7 @@
             this.button3.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.button3.Font = new System.Drawing.Font("Arial", 20.25F, System.Drawing.FontStyle.Bold);
             this.button3.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.button3.Location = new System.Drawing.Point(43, 422);
+            this.button3.Location = new System.Drawing.Point(43, 475);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(340, 48);
             this.button3.TabIndex = 20;
@@ -211,7 +212,7 @@
             this.button8.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.button8.Font = new System.Drawing.Font("Arial", 20.25F, System.Drawing.FontStyle.Bold);
             this.button8.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.button8.Location = new System.Drawing.Point(43, 511);
+            this.button8.Location = new System.Drawing.Point(43, 564);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(340, 48);
             this.button8.TabIndex = 24;
@@ -222,9 +223,9 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helpToolStripMenuItem,
-            this.aboutToolStripMenuItem,
             this.learnMoreAboutOurProductsToolStripMenuItem,
+            this.aboutToolStripMenuItem,
+            this.helpToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -232,12 +233,12 @@
             this.menuStrip1.TabIndex = 27;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // helpToolStripMenuItem
+            // learnMoreAboutOurProductsToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            this.learnMoreAboutOurProductsToolStripMenuItem.Name = "learnMoreAboutOurProductsToolStripMenuItem";
+            this.learnMoreAboutOurProductsToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
+            this.learnMoreAboutOurProductsToolStripMenuItem.Text = "Guides";
+            this.learnMoreAboutOurProductsToolStripMenuItem.Click += new System.EventHandler(this.learnMoreAboutOurProductsToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -246,12 +247,12 @@
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // learnMoreAboutOurProductsToolStripMenuItem
+            // helpToolStripMenuItem
             // 
-            this.learnMoreAboutOurProductsToolStripMenuItem.Name = "learnMoreAboutOurProductsToolStripMenuItem";
-            this.learnMoreAboutOurProductsToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
-            this.learnMoreAboutOurProductsToolStripMenuItem.Text = "Guides";
-            this.learnMoreAboutOurProductsToolStripMenuItem.Click += new System.EventHandler(this.learnMoreAboutOurProductsToolStripMenuItem_Click);
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -331,9 +332,9 @@
             this.label2.ForeColor = System.Drawing.Color.Crimson;
             this.label2.Location = new System.Drawing.Point(652, 592);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(721, 29);
+            this.label2.Size = new System.Drawing.Size(715, 29);
             this.label2.TabIndex = 33;
-            this.label2.Text = "Please Note - at any stage you can select \"Help\" in the top left";
+            this.label2.Text = "Please Note - at any page you can select \"Help\" in the top left";
             // 
             // label3
             // 
@@ -341,7 +342,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(40, 484);
+            this.label3.Location = new System.Drawing.Point(40, 537);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(346, 13);
             this.label3.TabIndex = 25;
@@ -354,7 +355,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(40, 473);
+            this.label1.Location = new System.Drawing.Point(40, 526);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(346, 13);
             this.label1.TabIndex = 25;
@@ -367,7 +368,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(40, 494);
+            this.label4.Location = new System.Drawing.Point(40, 547);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(346, 13);
             this.label4.TabIndex = 26;
@@ -382,7 +383,7 @@
             this.buttonAdminOptions.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.buttonAdminOptions.Font = new System.Drawing.Font("Arial", 20.25F, System.Drawing.FontStyle.Bold);
             this.buttonAdminOptions.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.buttonAdminOptions.Location = new System.Drawing.Point(46, 573);
+            this.buttonAdminOptions.Location = new System.Drawing.Point(43, 626);
             this.buttonAdminOptions.Name = "buttonAdminOptions";
             this.buttonAdminOptions.Size = new System.Drawing.Size(340, 48);
             this.buttonAdminOptions.TabIndex = 35;
@@ -403,12 +404,29 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // button11
+            // 
+            this.button11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button11.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.button11.Font = new System.Drawing.Font("Arial", 20.25F, System.Drawing.FontStyle.Bold);
+            this.button11.ForeColor = System.Drawing.Color.DodgerBlue;
+            this.button11.Location = new System.Drawing.Point(43, 421);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(340, 48);
+            this.button11.TabIndex = 36;
+            this.button11.Text = "Production Reports";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(1405, 772);
+            this.Controls.Add(this.button11);
             this.Controls.Add(this.buttonAdminOptions);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button9);
@@ -434,7 +452,7 @@
             this.MaximizeBox = false;
             this.Name = "Form2";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "UTC TESTS V7.1.6";
+            this.Text = "UTC TESTS V2.0.1";
             this.Load += new System.EventHandler(this.Form2_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -475,5 +493,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button buttonAdminOptions;
+        private System.Windows.Forms.Button button11;
     }
 }

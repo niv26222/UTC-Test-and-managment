@@ -39,8 +39,6 @@
             this.textBoxCustomerPhone = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxCustomerAddress = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.comboBoxCustomerRate = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
@@ -80,7 +78,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(80, 26);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(111, 20);
+            this.label1.Size = new System.Drawing.Size(112, 22);
             this.label1.TabIndex = 1;
             this.label1.Text = "Customers : ";
             // 
@@ -90,7 +88,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft YaHei UI", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(80, 2);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(237, 26);
+            this.label2.Size = new System.Drawing.Size(237, 28);
             this.label2.TabIndex = 2;
             this.label2.Text = "Add New Customer : ";
             // 
@@ -161,31 +159,6 @@
             this.textBoxCustomerAddress.Size = new System.Drawing.Size(290, 93);
             this.textBoxCustomerAddress.TabIndex = 64;
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft YaHei UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(80, 563);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(55, 19);
-            this.label6.TabIndex = 63;
-            this.label6.Text = "Rate : ";
-            // 
-            // comboBoxCustomerRate
-            // 
-            this.comboBoxCustomerRate.Font = new System.Drawing.Font("Arial Narrow", 9F);
-            this.comboBoxCustomerRate.FormattingEnabled = true;
-            this.comboBoxCustomerRate.Items.AddRange(new object[] {
-            "A",
-            "B",
-            "C",
-            "D"});
-            this.comboBoxCustomerRate.Location = new System.Drawing.Point(180, 564);
-            this.comboBoxCustomerRate.Name = "comboBoxCustomerRate";
-            this.comboBoxCustomerRate.Size = new System.Drawing.Size(82, 24);
-            this.comboBoxCustomerRate.Sorted = true;
-            this.comboBoxCustomerRate.TabIndex = 312;
-            // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold);
@@ -204,7 +177,7 @@
             this.label7.Font = new System.Drawing.Font("Microsoft YaHei UI", 15.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.Location = new System.Drawing.Point(80, 671);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(207, 26);
+            this.label7.Size = new System.Drawing.Size(207, 28);
             this.label7.TabIndex = 315;
             this.label7.Text = "Delete Customer : ";
             // 
@@ -301,20 +274,21 @@
             this.menuStrip1.Size = new System.Drawing.Size(1467, 24);
             this.menuStrip1.TabIndex = 325;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // excelToolStripMenuItem
             // 
-            this.excelToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.excelToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.excelToolStripMenuItem.Name = "excelToolStripMenuItem";
-            this.excelToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.excelToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.excelToolStripMenuItem.Text = "Excel";
             this.excelToolStripMenuItem.Click += new System.EventHandler(this.excelToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.helpToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
@@ -349,8 +323,6 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.comboBoxCustomerRate);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.textBoxCustomerAddress);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.textBoxCustomerPhone);
@@ -388,8 +360,6 @@
         private System.Windows.Forms.TextBox textBoxCustomerPhone;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBoxCustomerAddress;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox comboBoxCustomerRate;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button button2;

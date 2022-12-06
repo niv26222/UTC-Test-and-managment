@@ -1,27 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using System.Data.SqlServerCe;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
+using System.Data.SQLite;
+using System.Configuration;
 
 namespace Project_Product_List
 {
 
     public partial class Stock_DataGrig : Form
     {
-        string connectionString = Constants.Constants.UTC_SQL_CONNECTION_NEW;
+        
 
         public Stock_DataGrig()
         {
@@ -30,15 +23,20 @@ namespace Project_Product_List
 
         private void Stock_DataGrig_Load(object sender, EventArgs e)
         {
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Stock_products_dt] ; ", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM STOCK", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
         }
+
+
+
         public void createExcelFile()
         {
             //dataGridView1.Rows.Add();
@@ -93,15 +91,20 @@ namespace Project_Product_List
         {
             string productSerialNumber = textBoxSerialNumber.Text.Trim();
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
-            {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Stock_products_dt] where SerialNumber LIKE '%" + productSerialNumber + "';", sqlCon);
 
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+            
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
+            {
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM STOCK WHERE SerialNumber1 LIKE '%" + productSerialNumber + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -109,14 +112,18 @@ namespace Project_Product_List
             string ProductName = comboBox1.Text.Trim();
 
 
-            using (SqlConnection sqlCon = new SqlConnection(connectionString))
+            using (SQLiteConnection conn = new SQLiteConnection(General.LoadConnectionString()))
             {
-                sqlCon.Open();
-                SqlDataAdapter sqlDa = new SqlDataAdapter("SELECT * FROM [Stock_products_dt] where Product = '" + ProductName + "';", sqlCon);
-                DataTable dtbl = new DataTable();
-                sqlDa.Fill(dtbl);
-                dataGridView1.DataSource = dtbl;
+
+                conn.Open();
+                SQLiteDataAdapter adapter = new SQLiteDataAdapter("SELECT * FROM STOCK WHERE Product LIKE '%" + ProductName + "'", conn);
+                DataSet dset = new DataSet();
+                adapter.Fill(dset, "info");
+                dataGridView1.DataSource = dset.Tables[0];
+                conn.Close();
             }
+
+
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -134,7 +141,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+            pi.FileName = @"P:\Archive\HELP UTC TESTS\Help.docx";
 
             p.StartInfo = pi;
 

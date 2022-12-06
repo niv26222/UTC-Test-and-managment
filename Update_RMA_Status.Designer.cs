@@ -116,6 +116,7 @@
             this.Name = "Update_RMA_Status";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Update_RMA_Status";
+            this.Load += new System.EventHandler(this.Update_RMA_Status_Load);
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

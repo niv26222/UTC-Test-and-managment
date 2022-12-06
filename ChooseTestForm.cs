@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
@@ -57,22 +49,8 @@ namespace Project_Product_List
             new ADCS_BoatForm().Show();
             this.Hide();
         }
-        private void button7_Click(object sender, EventArgs e)
-        {
-            new UFLS400_InspectionForm().Show();
-            this.Hide();
-        }
-        private void button8_Click(object sender, EventArgs e)
-        {
-            new UFLS100_InspectionForm().Show();
-            this.Hide();
-        }
-        private void button9_Click(object sender, EventArgs e)
-        {
-            new UFLS200_InspectionForm().Show();
-            this.Hide();
-        }
 
+        
         private void ChooseTestForm_Load(object sender, EventArgs e)
         {
 
@@ -88,7 +66,7 @@ namespace Project_Product_List
             Process p = new Process();
             ProcessStartInfo pi = new ProcessStartInfo();
             pi.UseShellExecute = true;
-            pi.FileName = MyDirectory() + @"\HELP UTC TESTS\Help.docx";
+            pi.FileName = Paths.Paths.CHOOSE_FORM_HISTORY_HELP_FILE;
             p.StartInfo = pi;
 
             try

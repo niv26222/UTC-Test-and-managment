@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using System.Windows.Forms;
 
 namespace Project_Product_List
 {
     public partial class AdminOptions : Form
     {
-     
+
 
         public AdminOptions()
         {
@@ -31,7 +26,7 @@ namespace Project_Product_List
         {
             try
             {
-                SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
+                SqlConnection sqlConnection1 = new SqlConnection(Paths.Paths.UTC_SQL_CONNECTION_NEW);
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
                 
@@ -59,11 +54,10 @@ namespace Project_Product_List
 
         void DeleteFromDirectory(string textBox_name, string type)
         {
-            int year = DateTime.Now.Year;
 
             string AT_number_to_delete = textBox_Acceptance_test.Text;
 
-            string DeletePath = "U:" + @"\" + "Acceptance Testing" + @"\" + year + @"\" + type + @"\" + AT_number_to_delete + ".pdf";
+            string DeletePath = Paths.Paths.ADMIN_OPTIONS_ROOT_PATH + type + @"\" + AT_number_to_delete + ".pdf";
 
             if (File.Exists(DeletePath))
             {
@@ -90,7 +84,7 @@ namespace Project_Product_List
         {
             try
             {
-                SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
+                SqlConnection sqlConnection1 = new SqlConnection(Paths.Paths.UTC_SQL_CONNECTION_NEW);
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
                 string RMANumber = textBoxRMA_Number.Text.Trim();//   
@@ -124,7 +118,7 @@ namespace Project_Product_List
         {
             try
             {
-                SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
+                SqlConnection sqlConnection1 = new SqlConnection(Paths.Paths.UTC_SQL_CONNECTION_NEW);
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
                 string RMANumber = textBoxRMA_Number.Text.Trim();//   
@@ -158,7 +152,7 @@ namespace Project_Product_List
         {
             try
             {
-                SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
+                SqlConnection sqlConnection1 = new SqlConnection(Paths.Paths.UTC_SQL_CONNECTION_NEW);
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
                 string RMANumber = textBoxRMA_Number.Text.Trim();//   
@@ -192,7 +186,7 @@ namespace Project_Product_List
         {
             try
             {
-                SqlConnection sqlConnection1 = new SqlConnection(Constants.Constants.UTC_SQL_CONNECTION_NEW);
+                SqlConnection sqlConnection1 = new SqlConnection(Paths.Paths.UTC_SQL_CONNECTION_NEW);
                 SqlCommand cmd = new SqlCommand();
                 SqlDataReader reader;
                 string RMANumber = textBoxRMA_Number.Text.Trim();//   
@@ -228,7 +222,7 @@ namespace Project_Product_List
 
             string rma_number_to_delete = textBoxRMANumber.Text;
 
-            string DeletePath = "U:" + @"\" + "RMA - NEW" + @"\" + RMAyear + @"\" + rma_number_to_delete + ".pdf";
+            string DeletePath = Paths.Paths.RMA_ROOT_PATH + rma_number_to_delete + ".pdf";
 
             if (File.Exists(DeletePath))
             {
@@ -281,7 +275,7 @@ namespace Project_Product_List
             int RMAyear = DateTime.Now.Year;
 
             
-            string DeletePath = "U:" + @"\" + "Service form - NEW" + @"\" + RMAyear + @"\" + ServiceForm_from_to_delete + ".pdf";
+            string DeletePath = Paths.Paths.SERVICE_FORM_PATH + ServiceForm_from_to_delete + ".pdf";
 
 
             if (File.Exists(DeletePath))
@@ -315,7 +309,7 @@ namespace Project_Product_List
             int year = DateTime.Now.Year;
 
 
-            string DeletePath = "U:" + @"\" + "Test Pressure Opacity" + @"\" + year + @"\" + tpo_to_delete + ".pdf";
+            string DeletePath = Paths.Paths.TEST_PRESSURE_OPACITY_PATH + tpo_to_delete + ".pdf";
 
 
             if (File.Exists(DeletePath))
@@ -360,7 +354,7 @@ namespace Project_Product_List
             int year = DateTime.Now.Year;
 
 
-            string DeletePath = "U:" + @"\" + "Test Pressure Report" + @"\" + year + @"\" + tpr_to_delete + ".pdf";
+            string DeletePath = Paths.Paths.TEST_PRESSURE_REPORT_PATH + tpr_to_delete + ".pdf";
 
 
             if (File.Exists(DeletePath))
